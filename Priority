@@ -1,0 +1,20 @@
+P12-P27
+Rule 00
+	- IDS00
+	- IDS07
+	- IDS16
+Rule 05
+	- OBJ05
+	- OBJ11
+	- OBJ13
+Rule 07
+	- ERR02
+	- ERR08
+Rule 13
+	- FIO02
+	- FIO08
+Rule 14
+	- SER01
+	- SER04
+	- SER05
+  - SER08
