@@ -4,6 +4,9 @@ Rule 00
 		- IDS00
 		- IDS07
 		- IDS16
+		- IDS01 L2
+		- IDS11 L2
+		- IDS14 L2
 Rule 05
 	Dariya
 		- OBJ05
