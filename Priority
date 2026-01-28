@@ -1,20 +1,26 @@
 P12-P27
 Rule 00
-	- IDS00
-	- IDS07
-	- IDS16
+	Julia:
+		- IDS00
+		- IDS07
+		- IDS16
 Rule 05
-	- OBJ05
-	- OBJ11
-	- OBJ13
+	Dariya
+		- OBJ05
+		- OBJ11
+		- OBJ13
 Rule 07
-	- ERR02
-	- ERR08
+	Maria:
+		- ERR02
+		- ERR08
 Rule 13
-	- FIO02
-	- FIO08
+	Azul:
+		- FIO02
+		- FIO08
 Rule 14
-	- SER01
-	- SER04
-	- SER05
-  	- SER08
+	Carlos:
+		- SER01
+		- SER04
+	Shalom:
+		- SER05
+		- SER08
