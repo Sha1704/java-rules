@@ -8,7 +8,7 @@ Rule 00
 		- IDS11 L2
 		- IDS14 L2
 Rule 05
-	Dariya
+	Dariya:
 		- OBJ05
 		- OBJ11
 		- OBJ13
