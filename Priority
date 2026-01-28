@@ -7,6 +7,10 @@ Rule 00
 		- IDS01 L2
 		- IDS11 L2
 		- IDS14 L2
+	Rec. 05
+		- OBJ54
+		- OBJ55
+		- OBJ56
 Rule 05
 	Dariya:
 		- OBJ05
