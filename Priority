@@ -39,6 +39,7 @@ Rule 14
 		Rec:
 			- MSC55-J
 			- MSC51-J
+			- MSC54-J
 	Shalom:
 		- SER05
 		- SER08
