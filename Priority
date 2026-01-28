@@ -31,6 +31,10 @@ Rule 14
 		- SER03-J
 		- SER11-J
 		- SER02-J
+
+		Rec:
+			- MSC55-J
+			- MSC51-J
 	Shalom:
 		- SER05
 		- SER08
@@ -38,3 +42,8 @@ Rule 14
 		- SER03-J
 		- SER10-J
 		- SER09-J
+
+		Rec:
+			- MSC59-J
+			- MSC60-J
+			- MSC61-J
