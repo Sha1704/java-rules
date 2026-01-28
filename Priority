@@ -4,11 +4,17 @@ Rule 00
 		- IDS00
 		- IDS07
 		- IDS16
+		- IDS01 L2
+		- IDS11 L2
+		- IDS14 L2
 Rule 05
-	Dariya
+	Dariya:
 		- OBJ05
 		- OBJ11
 		- OBJ13
+		- OBJ01 L2
+		- OBJ09 L2
+		- OBJ10 L2
 Rule 07
 	Maria:
 		- ERR02
