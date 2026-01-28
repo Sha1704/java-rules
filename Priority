@@ -21,6 +21,14 @@ Rule 14
 	Carlos:
 		- SER01
 		- SER04
+		- SER12-J
+		- SER03-J
+		- SER11-J
+		- SER02-J
 	Shalom:
 		- SER05
 		- SER08
+		- SER06-J
+		- SER03-J
+		- SER10-J
+		- SER09-J
