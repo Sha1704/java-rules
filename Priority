@@ -27,6 +27,14 @@ Rule 07
 	Maria:
 		- ERR02
 		- ERR08
+		- ERR01
+		- ERR04
+		- ERR07
+		- Rule 8: VNA00
+	Rec. 06:
+		- MET50-J
+		- MET51-J
+		- MET52-J
 Rule 13
 	Azul:
 		- FIO02
