@@ -69,7 +69,9 @@ Rule 14
 		- SER10-J
 		- SER09-J
 
-		Rec 49:
-			- MSC59-J
-			- MSC60-J
-			- MSC61-J
+		Rec 06:
+			- MET53-J
+			- MET55-J
+			- MET56-J
+
+Rules and Recomendation link: https://wiki.sei.cmu.edu/confluence/collector/pages.action?key=java
