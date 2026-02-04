@@ -27,13 +27,22 @@ Rule 07
 	Maria:
 		- ERR02
 		- ERR08
+		- ERR01
+		- ERR04
+		- ERR07
+		- Rule 8: VNA00
+	Rec. 06:
+		- MET50-J
+		- MET51-J
+		- MET52-J
 Rule 13
 	Azul:
 		- FIO02
 		- FIO08
 		- FIO05
 		- FIO14 
-		- OBJ14 (rule 05)
+		- OBJ14 (rule 05) 
+		- EXP02 (rule 02)
 	Rec 13.
 		- FIO52
 		- FIO50
@@ -61,7 +70,9 @@ Rule 14
 		- SER10-J
 		- SER09-J
 
-		Rec 49:
-			- MSC59-J
-			- MSC60-J
-			- MSC61-J
+		Rec 06:
+			- MET53-J
+			- MET55-J
+			- MET56-J
+
+Rules and Recomendation link: https://wiki.sei.cmu.edu/confluence/collector/pages.action?key=java
