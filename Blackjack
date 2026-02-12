@@ -1,0 +1,13 @@
+Project: Blackjack
+  - cards *
+  - chips/money/gamble *
+  - power-ups (drinks)
+  - playing/counting *
+  - warning
+  - Save as *
+  - multiple player *
+  - multiple lobbies/tables 
+  - multiple accounts (regular, vip) *
+  - suggestion/probability/help mode (count cards)
+
+Note: * means priority
