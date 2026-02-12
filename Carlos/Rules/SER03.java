@@ -52,6 +52,10 @@ public class SER03 {
         }
     }
 
+    /**
+     * A Balatro game save that implements Externalizable with a guard against
+     * multiple initialization
+     */
     public static class BalatroSecureSave implements Serializable {
 
         // Serialization version ID
