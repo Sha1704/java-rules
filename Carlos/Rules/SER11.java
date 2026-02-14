@@ -119,7 +119,7 @@ public class SER11 {
                     initialized = true;
                 } else {
                     throw new IllegalStateException(
-                            "SER11-J: readExternal() called on already‑initialized object"
+                            "SER11-J: readExternal() called already"
                     );
                 }
             }
