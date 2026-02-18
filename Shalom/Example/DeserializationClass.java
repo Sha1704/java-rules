@@ -1,13 +1,15 @@
+package Shalom.Example;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
 public class DeserializationClass {
-    public static void main(String[] args) throws IOException, ClassNotFoundException{
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         Emp emp = null;
         try {
-            FileInputStream filein = new FileInputStream("C:\\Users\\dlege\\OneDrive\\Documents\\GitHub\\java-rules\\Shalom\\serialization and deserialization example\\test.txt");
+            FileInputStream filein = new FileInputStream("Shalom/Example/SerializationClassTest.txt");
             ObjectInputStream in = new ObjectInputStream(filein);
             emp = (Emp) in.readObject();
             in.close();
