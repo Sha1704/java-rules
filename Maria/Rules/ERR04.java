@@ -5,7 +5,7 @@ package Maria.Rules;
  * Shows exception ERRO4-J-EX0: Allows complete abruptly from a 
  * control flow statement in a finally block.
  */
-public class ERR04J {
+public class ERR04 {
     //Main class method
     public static void main(String[] args) throws Exception {
         //try-finally to catch exeptions. 
@@ -20,8 +20,6 @@ public class ERR04J {
             }
             //Showing that the finally block completes safely. 
             System.out.println("Finally block ended safely.");
-
         }
     }
-
 }

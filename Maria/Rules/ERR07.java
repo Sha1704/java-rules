@@ -5,8 +5,7 @@ package Maria.Rules;
  * Shows exception ERR07-J-EX0: Allows throwing a general exception when needed to comply with a security policy.
  * @author Maria Plascencia
  */
-public class ERR07J {
-
+public class ERR07 {
     // Method throws an SPECIFIC exception instead of a general one.
     public static void checkValue(int value) throws IllegalArgumentException {
         if (value < 0) {
@@ -37,7 +36,5 @@ public class ERR07J {
         } catch (Exception e) {
             System.out.println("Caught sanitized exception: " + e.getMessage());
         }
-
     }
 }
-

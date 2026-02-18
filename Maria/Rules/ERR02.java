@@ -7,11 +7,9 @@ import java.util.logging.Logger;
  * Rule 07. ERR02-J: Prevent exceptions while logging data 
  * @author Maria Plascencia
  */
-public class ERR02J {
-
+public class ERR02 {
     //Creating a logger object to log any exceptions that may occur
-    private static final Logger logger = Logger.getLogger(ERR02J.class.getName());
-
+    private static final Logger logger = Logger.getLogger(ERR02.class.getName());
     //Main class method 
     public static void main(String[] args) {
         //Simple try-catch to catch exceptions
