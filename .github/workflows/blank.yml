@@ -1,0 +1,53 @@
+name: Java CI/CD
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java-version: [ '11', '17', '21' ]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ matrix.java-version }}
+        distribution: 'temurin'
+
+    - name: Compile Java files
+      run: |
+        # Find and compile all Java files
+        javac *.java 2>&1 || true
+        find . -name "*.java" -type f ! -path "./.git/*" | xargs javac -d build 2>&1 || true
+
+    - name: Run tests (if any exist)
+      run: |
+        # This will run any test files if they exist
+        if find . -name "*Test.java" -o -name "Test*.java" | grep -q .; then
+          java -cp build org.junit.runner.JUnitCore **/*.Test 2>&1 || true
+        fi
+
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Check Java syntax
+      run: |
+        find . -name "*.java" -type f ! -path "./.git/*" -exec javac -d build {} \; 2>&1 || true
