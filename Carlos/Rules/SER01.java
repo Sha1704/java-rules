@@ -245,7 +245,7 @@ public class SER01 {
             System.err.println("FATAL ERROR: " + t.getClass().getSimpleName() + " - " + t.getMessage());
             t.printStackTrace();
         } finally {
-            // Cleanup – runs even after a Throwable
+            // Cleanup
             if (REMOVE_SAVE_FILE) {
                 if (saveFile.exists() && saveFile.delete()) {
                     System.out.println("Cleanup: Save file deleted.");
