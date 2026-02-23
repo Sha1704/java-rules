@@ -8,6 +8,7 @@ Project: Blackjack
   - multiple player *
   - multiple lobbies/tables 
   - multiple accounts (regular, vip) *
+    -VIP: larger minimum bet, after 5 regular games, getting drinks (counting cards)
   - suggestion/probability/help mode (count cards)
 
 Note: * means priority
