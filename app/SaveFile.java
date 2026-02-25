@@ -14,32 +14,24 @@ public class SaveFile {
     
 }
 
-class EcnryptAndDecrypt
+class EncryptAndDecrypt
 {
     private static final String UNICODE_FORMAT = "UTF-8";
 
-    public static SecretKey generateKey (String encryptionType) // eccryptionType is AES
+    public static SecretKey generateKey (String encryptionType) throws NoSuchAlgorithmException // encryptionType is AES
     {
-        try
-        {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance(encryptionType);
-            SecretKey myKey = keyGenerator.generateKey();
-            return myKey;
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            System.out.println("No such algorithm exception: " + e.getMessage());
-            return null;
-        }
+        KeyGenerator keyGenerator = KeyGenerator.getInstance(encryptionType);
+        SecretKey myKey = keyGenerator.generateKey();
+        return myKey;
     }
 
-    public static byte[] encryptData (String dataToEncrypt, SecretKey myKey, Cipher plainText)
+    public static byte[] encryptData (String dataToEncrypt, SecretKey myKey, Cipher cipher)
     {
         try
         {
             byte[] text = dataToEncrypt.getBytes(UNICODE_FORMAT);
-            plainText.init(Cipher.ENCRYPT_MODE, myKey);
-            byte[] cipherText = plainText.doFinal(text);
+            cipher.init(Cipher.ENCRYPT_MODE, myKey);
+            byte[] cipherText = cipher.doFinal(text);
 
             return cipherText;
         }

@@ -44,7 +44,7 @@ public class SER08 {
 
             System.out.println("Deserialized student: " + s2.name);
 
-        } catch (Exception e) {
+        } catch (Exception e) { 
             e.printStackTrace();
         }
     }
