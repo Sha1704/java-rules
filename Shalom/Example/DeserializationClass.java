@@ -19,6 +19,7 @@ public class DeserializationClass {
      * @throws IOException if an I/O error occurs
      * @throws ClassNotFoundException if the class cannot be found
      */
+    @SuppressWarnings("ConvertToTryWithResources")
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         Emp emp = null;
         try {

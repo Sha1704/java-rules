@@ -17,6 +17,7 @@ public class SerializationClass {
      * Main method to serialize an Emp object.
      * @param args command-line arguments
      */
+    @SuppressWarnings({"ConvertToTryWithResources", "CallToPrintStackTrace"})
     public static void main(String[] args) {
         Emp emp = new Emp();
         emp.name = "john doe";

@@ -20,14 +20,8 @@ public class SER09 {
  */
     static class Student implements Serializable {
 
+        @SuppressWarnings("FieldMayBeFinal")
         private String name = "Major Problem";
-
-        /**
-         * Prints student info.
-         */
-        private void printInfo() {
-            System.out.println("Student: " + name);
-        }
 
         /**
          * Custom deserialization with validation.
@@ -50,6 +44,7 @@ public class SER09 {
      * Main method to serialize and deserialize a Student object.
      * @param args command-line arguments
      */
+    @SuppressWarnings({"CallToPrintStackTrace", "UseSpecificCatch", "ConvertToTryWithResources"})
     public static void main(String[] args) {
 
         try {

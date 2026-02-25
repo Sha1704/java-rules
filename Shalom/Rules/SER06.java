@@ -63,6 +63,7 @@ public class SER06 {
      * Main method to serialize and deserialize a Student object.
      * @param args command-line arguments
      */
+    @SuppressWarnings({"ConvertToTryWithResources", "CallToPrintStackTrace", "UseSpecificCatch"})
     public static void main(String[] args) {
 
         try {

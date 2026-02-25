@@ -83,6 +83,7 @@ public class SER07 {
      * Entry point of the program.
      * @param args command-line arguments (not used)
      */
+    @SuppressWarnings({"ConvertToTryWithResources", "UseSpecificCatch", "CallToPrintStackTrace"})
     public static void main(String[] args) {
 
         try {

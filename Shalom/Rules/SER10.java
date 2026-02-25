@@ -16,6 +16,7 @@ public class SER10 {
      * Main method to serialize a String.
      * @param args command-line arguments
      */
+    @SuppressWarnings("CallToPrintStackTrace")
     public static void main(String[] args) {
 
         try (
