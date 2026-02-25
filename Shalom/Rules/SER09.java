@@ -8,16 +8,27 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+/**
+ * RULE SER09-J: This rule states that an overridable method 
+ * must not be called in a readObject() method because the 
+ * object can be initialized/changed by an attacker to run malicious code.
+ */
 public class SER09 {
 
+/**
+ * Serializable Student class with validation in readObject.
+ */
     static class Student implements Serializable {
 
+        @SuppressWarnings("FieldMayBeFinal")
         private String name = "Major Problem";
 
-        private void printInfo() {
-            System.out.println("Student: " + name);
-        }
-
+        /**
+         * Custom deserialization with validation.
+         * @param in the ObjectInputStream
+         * @throws IOException if an I/O error occurs
+         * @throws ClassNotFoundException if the class cannot be found
+         */
         private void readObject(ObjectInputStream in)
                 throws IOException, ClassNotFoundException {
 
@@ -29,6 +40,11 @@ public class SER09 {
         }
     }
 
+    /**
+     * Main method to serialize and deserialize a Student object.
+     * @param args command-line arguments
+     */
+    @SuppressWarnings({"CallToPrintStackTrace", "UseSpecificCatch", "ConvertToTryWithResources"})
     public static void main(String[] args) {
 
         try {
