@@ -1,7 +1,3 @@
-/**
- * Demonstrates safe serialization of a String object.
- */
-
 package Shalom.Rules;
 
 import java.io.FileOutputStream;
@@ -9,8 +5,11 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 /**
- * Main class to serialize a String object.
+ * RULE SER010-J: This rule says to call reset() 
+ * often to clear the cache and prevent memory leaks 
+ * and crashes when serializing many objects at the same time. 
  */
+
 public class SER10 {
 
     /**

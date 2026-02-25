@@ -9,7 +9,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
- * Main class for serializing and deserializing a Student with validation.
+ * RULE SER09-J: This rule states that an overridable method 
+ * must not be called in a readObject() method because the 
+ * object can be initialized/changed by an attacker to run malicious code.
  */
 public class SER09 {
 

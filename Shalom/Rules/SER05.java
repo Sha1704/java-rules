@@ -1,7 +1,8 @@
 package Shalom.Rules;
 
 /**
- * Demonstrates serialization of a static inner class.
+ * RULE SER05-J: Do not serialize a non static inner class because it serializes 
+ * the outer class and may cause unexpected behavior and errors
  */
 
 import java.io.FileOutputStream;

@@ -6,7 +6,9 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
 /**
- * Demonstrates secure comparison of cryptographic keys using MessageDigest.isEqual.
+ * RECOMENDATION MET56-J: Do not use .equals() to 
+ * compare cryptographic keys because it may not 
+ * compare the key values.
  */
 public class MET56 {
 

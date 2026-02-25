@@ -1,7 +1,10 @@
 package Shalom.Rules;
 
 /**
- * Demonstrates defensive copying during serialization and deserialization.
+ * RULE SER06-J: When deserializing a mulabel (changeable) data 
+ * like an array or a date,  make sure to make a copy of the data 
+ * before deserializing it so an attacker can't change the state of 
+ * the data to do whatever they want.
  */
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

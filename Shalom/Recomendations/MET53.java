@@ -1,5 +1,6 @@
 /**
- * Demonstrates object cloning and the use of the Cloneable interface.
+ * RECOMENDATION MET53-J: When you clone an object, 
+ * the new object should be of the same type as the original object.
  */
 package Shalom.Recomendations;
 

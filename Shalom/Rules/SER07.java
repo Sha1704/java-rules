@@ -9,10 +9,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /*
-Secure BankAccount class that properly validates data during
-serialization and deserialization.
-This class ensures that balance can never be negative,
-even if an attacker tries to manipulate serialized data.
+ * RULE SER07-J: Always manually validate objects after 
+ * deserialization because deserilization can create an 
+ * object without calling its constructor which is dangerous.
  */
 class BankAccount implements Serializable {
 
@@ -20,9 +19,9 @@ class BankAccount implements Serializable {
     private int balance;
 
     /*
-    Constructs a BankAccount with the specified balance.
-    @param balance the initial balance
-    @throws IllegalArgumentException if balance is negative
+     * Constructs a BankAccount with the specified balance.
+     * @param balance the initial balance
+     * @throws IllegalArgumentException if balance is negative
      */
     public BankAccount(int balance) {
         if (balance < 0) {
@@ -32,17 +31,17 @@ class BankAccount implements Serializable {
     }
 
     /*
-    Returns the current balance.
-    @return the account balance
+     * Returns the current balance.
+     * @return the account balance
      */
     public int getBalance() {
         return balance;
     }
 
     /*
-    Deposits money into the account.
-    @param amount the amount to deposit
-    @throws IllegalArgumentException if amount is not positive
+     * Deposits money into the account.
+     * @param amount the amount to deposit
+     * @throws IllegalArgumentException if amount is not positive
      */
     public void deposit(int amount) {
         if (amount <= 0) {
@@ -52,14 +51,14 @@ class BankAccount implements Serializable {
     }
 
     /*
-    Custom deserialization method to validate object state.
-    This method ensures that the balance remains valid after
-    deserialization. Since constructors are not called during
-    deserialization, validation must be done here.
-    @param in the ObjectInputStream used to deserialize
-    @throws IOException if an I/O error occurs
-    @throws ClassNotFoundException if class cannot be found
-    @throws InvalidObjectException if balance is invalid
+     * Custom deserialization method to validate object state.
+     * This method ensures that the balance remains valid after
+     * deserialization. Since constructors are not called during
+     * deserialization, validation must be done here.
+     * @param in the ObjectInputStream used to deserialize
+     * @throws IOException if an I/O error occurs
+     * @throws ClassNotFoundException if class cannot be found
+     * @throws InvalidObjectException if balance is invalid
      */
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         // Perform default deserialization
@@ -74,15 +73,15 @@ class BankAccount implements Serializable {
 
 
 /*
-Main class to demonstrate secure serialization and deserialization.
-This class serializes a BankAccount object to a file and then
-deserializes it safely while ensuring validation is enforced.
+ * Main class to demonstrate secure serialization and deserialization.
+ * This class serializes a BankAccount object to a file and then
+ * deserializes it safely while ensuring validation is enforced.
  */
 public class SER07 {
 
     /*
-    Entry point of the program.
-    @param args command-line arguments (not used)
+     * Entry point of the program.
+     * @param args command-line arguments (not used)
      */
     public static void main(String[] args) {
 
@@ -118,7 +117,7 @@ public class SER07 {
         } catch (Exception e) {
 
             /*
-            Handles serialization or validation errors.
+             * Handles serialization or validation errors.
             */
             System.err.println("Error occurred: " + e.getMessage());
 

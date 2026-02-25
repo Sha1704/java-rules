@@ -7,7 +7,11 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
- * Demonstrates serialization and deserialization of a simple immutable class.
+ * RULE SER08-J: Do not deserialize data 
+ * (convert a saved data to a usable object) 
+ * with full permission, restrict the permission 
+ * of the data before converting into an object to 
+ * prevent attackers from messing with the system.
  */
 public class SER08 {
 

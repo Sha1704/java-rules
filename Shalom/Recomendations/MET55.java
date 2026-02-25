@@ -1,5 +1,9 @@
 package Shalom.Recomendations;
-
+/*
+ * RECOMENDATION MET55-J: Do return null when returning an empty 
+ * list of arrays or arraylist. Instead, return an empty 
+ * array or arraylist.
+ */
 class Numbers {
 
     private final int[] numbers;
