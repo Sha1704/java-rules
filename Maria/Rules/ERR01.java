@@ -2,7 +2,6 @@ package Maria.Rules;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-
 /**Rule 07. ERR01-J: Do not allow exceptions to expose sensitive information 
  * @author Maria Plascencia 
  */
