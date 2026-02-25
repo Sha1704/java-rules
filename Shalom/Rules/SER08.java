@@ -2,6 +2,8 @@ package Shalom.Rules;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputFilter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -39,12 +41,20 @@ public class SER08 {
 
             FileInputStream inputStream = new FileInputStream("Shalom/Rules/SER08.txt");
             ObjectInputStream in = new ObjectInputStream(inputStream);
+
+            // allow only Student class
+            ObjectInputFilter filter = ObjectInputFilter.Config.createFilter("SER08$Student;!*");
+            in.setObjectInputFilter(filter);
+
             Student s2 = (Student) in.readObject();
             in.close();
 
             System.out.println("Deserialized student: " + s2.name);
 
-        } catch (Exception e) { 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
