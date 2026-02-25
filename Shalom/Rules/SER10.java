@@ -1,11 +1,22 @@
+/**
+ * Demonstrates safe serialization of a String object.
+ */
+
 package Shalom.Rules;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+/**
+ * Main class to serialize a String object.
+ */
 public class SER10 {
 
+    /**
+     * Main method to serialize a String.
+     * @param args command-line arguments
+     */
     public static void main(String[] args) {
 
         try (

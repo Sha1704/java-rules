@@ -1,5 +1,9 @@
 package Shalom.Rules;
 
+/**
+ * Demonstrates serialization of a static inner class.
+ */
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -9,16 +13,27 @@ public class SER05 {
 
     private String schoolName = "Illinois state university";
 
+    /**
+     * Serializable static inner class representing a student.
+     */
     static class Student implements Serializable {
 
         String name;
         int age;
 
+        /**
+         * Prints the school name from the outer class.
+         * @param outer the outer SER05 instance
+         */
         void printSchool(SER05 outer) {
             System.out.println("School: " + outer.schoolName);
         }
     }
 
+    /**
+     * Main method to serialize a Student object.
+     * @param args command-line arguments
+     */
     public static void main(String[] args) {
         Student s1 = new Student();
 

@@ -5,8 +5,16 @@ import java.security.MessageDigest;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
+/**
+ * Demonstrates secure comparison of cryptographic keys using MessageDigest.isEqual.
+ */
 public class MET56 {
 
+    /**
+     * Main method to generate and compare AES keys.
+     * @param args command-line arguments
+     * @throws Exception if cryptographic operations fail
+     */
     public static void main(String[] args) throws Exception {
 
         KeyGenerator gen = KeyGenerator.getInstance("AES");

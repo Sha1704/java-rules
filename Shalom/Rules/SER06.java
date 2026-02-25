@@ -1,5 +1,8 @@
 package Shalom.Rules;
 
+/**
+ * Demonstrates defensive copying during serialization and deserialization.
+ */
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -8,18 +11,35 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * Serializable Student class with defensive copying of Date.
+ */
 class Student implements Serializable {
 
     private Date enrollmentDate;
 
+    /**
+     * Constructs a Student with the given enrollment date.
+     * @param date the enrollment date
+     */
     public Student(Date date) {
         this.enrollmentDate = new Date(date.getTime());
     }
 
+    /**
+     * Returns a defensive copy of the enrollment date.
+     * @return the enrollment date
+     */
     public Date getEnrollmentDate() {
         return new Date(enrollmentDate.getTime());
     }
 
+    /**
+     * Custom deserialization to ensure defensive copy of Date.
+     * @param in the ObjectInputStream
+     * @throws IOException if an I/O error occurs
+     * @throws ClassNotFoundException if the class cannot be found
+     */
     private void readObject(ObjectInputStream in)
             throws IOException, ClassNotFoundException {
 
@@ -31,8 +51,15 @@ class Student implements Serializable {
     }
 }
 
+/**
+ * Main class to demonstrate defensive copying in serialization.
+ */
 public class SER06 {
 
+    /**
+     * Main method to serialize and deserialize a Student object.
+     * @param args command-line arguments
+     */
     public static void main(String[] args) {
 
         try {

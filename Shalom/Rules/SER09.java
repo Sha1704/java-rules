@@ -8,16 +8,31 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+/**
+ * Main class for serializing and deserializing a Student with validation.
+ */
 public class SER09 {
 
+/**
+ * Serializable Student class with validation in readObject.
+ */
     static class Student implements Serializable {
 
         private String name = "Major Problem";
 
+        /**
+         * Prints student info.
+         */
         private void printInfo() {
             System.out.println("Student: " + name);
         }
 
+        /**
+         * Custom deserialization with validation.
+         * @param in the ObjectInputStream
+         * @throws IOException if an I/O error occurs
+         * @throws ClassNotFoundException if the class cannot be found
+         */
         private void readObject(ObjectInputStream in)
                 throws IOException, ClassNotFoundException {
 
@@ -29,6 +44,10 @@ public class SER09 {
         }
     }
 
+    /**
+     * Main method to serialize and deserialize a Student object.
+     * @param args command-line arguments
+     */
     public static void main(String[] args) {
 
         try {
