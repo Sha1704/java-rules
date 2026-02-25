@@ -23,7 +23,7 @@ public class SER10 {
                 FileOutputStream file = new FileOutputStream("Shalom/Rules/SER10.txt"); ObjectOutputStream out = new ObjectOutputStream(file)) {
 
             out.writeObject("John is a boy");
-            out.flush();
+            out.reset(); // Reset the ObjectOutputStream to clear the cache
             file.close();
 
             System.out.println("Object serialized safely");

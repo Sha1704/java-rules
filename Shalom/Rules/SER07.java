@@ -106,7 +106,7 @@ public class SER07 {
             FileInputStream inputStream = new FileInputStream("Shalom/Rules/SER07.txt");
             ObjectInputStream in = new ObjectInputStream(inputStream);
 
-            BankAccount loadedAccount = (BankAccount) in.readObject();
+            BankAccount loadedAccount = (BankAccount) in.readObxject();
 
             in.close();
 
