@@ -18,6 +18,9 @@ final class VIP extends Regular {
     // constructor fully initializes object (OBJ11)
     public VIP(String playerName, int balance, int gamesPlayed, Date lastLogin){
         super(playerName, balance, gamesPlayed, lastLogin);
+        if(!isEligibleForVIP()){
+            throw new IllegalStateException("Account is not eligible for VIP promotion");
+        }
         this.vipBoostActive = true;
         System.out.println("\n You have been promoted to VIP!");
         System.out.println("Available VIP perks: " + AVAILABLE_PERKS);

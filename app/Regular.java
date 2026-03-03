@@ -12,6 +12,9 @@ class Regular {
 
     // constructor fully initializes obj and validates state (OBJ11)
     public Regular(String playerName, int initialBalance){
+        if(playerName == null || playerName.isBlank()){
+            throw new IllegalArgumentException("Player name cannot be blank");
+        }
         if(initialBalance < 0){
             throw new IllegalArgumentException("Balance cannot be negative!");
         }
@@ -23,6 +26,18 @@ class Regular {
 
     // package-private constructor for VIP promotion
     Regular(String playerName, int balance, int gamesPlayed, Date lastLogin){
+        if(playerName == null || playerName.isBlank()){
+            throw new IllegalArgumentException("Player name cannot be blank");
+        }
+        if(balance < 0){
+            throw new IllegalArgumentException("Balance cannot be negative!");
+        }
+        if(gamesPlayed <0){
+            throw new IllegalArgumentException("Games played cannot be negative!");
+        }
+        if(lastLogin == null){
+            throw new IllegalArgumentException("Last login cannot be null");
+        }
         this.playerName = playerName;
         this.balance = balance;
         this.gamesPlayed = gamesPlayed;
