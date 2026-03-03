@@ -12,6 +12,9 @@ class Regular {
 
     // constructor fully initializes obj and validates state (OBJ11)
     public Regular(String playerName, int initialBalance){
+        if(playerName == null || playerName.isBlank()){
+            throw new IllegalArgumentException("Player name cannot be blank");
+        }
         if(initialBalance < 0){
             throw new IllegalArgumentException("Balance cannot be negative!");
         }
