@@ -7,6 +7,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import java.nio.file.Files;
 
@@ -88,35 +89,43 @@ public class SaveFile {
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(baos)) {
 
-            // SER01-J: Do not deviate from proper signatures
-            // Using defaultWriteObject is correct. If Player has writeObject method,
-            // it will be called automatically with this signature.
-            // FIO53-J: Use writeUnshared() with care
-            // We use writeObject() (shared mode) by default. If we need unshared,
-            // we would call oos.writeUnshared(player) instead.
-            oos.writeObject(player);
+            // SER01-J: Do not deviate - using proper signature
+            oos.writeObject(player); // Calls Player.writeObject if defined
             oos.flush();
 
             byte[] serializedData = baos.toByteArray();
 
-            // SER02-J: Sign then seal objects before sending outside trust boundary
-            // For now, we just store the raw data
-            // TODO: Implement actual signing and encryption here
-            if (encryptionKey != null) {
-                System.out.println("SER02-J: Encryption key provided, but not implemented yet");
-            }
-            if (signatureKey != null) {
-                System.out.println("SER02-J: Signature key provided, but not implemented yet");
+            // SER02-J: Sign then seal
+            if (encryptionKey == null || signatureKey == null) {
+                System.err.println("SER02-J: Encryption and signature keys required");
+                return false;
             }
 
-            // SER03-J: Do not serialize unencrypted sensitive data
-            // We trust that the Player class marks sensitive fields as transient
-            // If Player has sensitive data, it should NOT be in serializedData
-            // Write to file
-            Files.write(new File(SAVE_FILE).toPath(), serializedData);
+            // Step 1: Sign the serialized data
+            byte[] signature = signData(serializedData, signatureKey);
+            if (signature == null) {
+                System.err.println("SER02-J: Signing failed");
+                return false;
+            }
 
-            System.out.println("Player saved successfully");
-            return true; // MET54-J: Success feedback
+            // Combine data + signature
+            ByteArrayOutputStream combined = new ByteArrayOutputStream();
+            combined.write(serializedData);
+            combined.write(signature);
+            byte[] dataToSeal = combined.toByteArray();
+
+            // Step 2: Encrypt (seal) the signed data
+            byte[] sealedData = encryptData(dataToSeal, encryptionKey);
+            if (sealedData == null) {
+                System.err.println("SER02-J: Encryption failed");
+                return false;
+            }
+
+            // Write sealed data to file
+            Files.write(new File(SAVE_FILE).toPath(), sealedData);
+
+            System.out.println("Player saved securely (SER02-J: sign-then-seal)");
+            return true;
 
         } catch (IOException e) {
             // ERR53-J: Try to gracefully recover from system errors
@@ -138,15 +147,14 @@ public class SaveFile {
      * no signing)
      * @return the loaded Player object, or null if load fails
      */
-    public Player loadPlayer(SecretKey encryptionKey, PublicKey verificationKey) {
-        // MET54-J: Return null on failure for feedback
-        // SER04-J: Check security manager before reading
+        public Player loadPlayer(SecretKey encryptionKey, PublicKey verificationKey) {
+        // SER04-J: Security manager check before reading
         SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
             try {
                 sm.checkRead(SAVE_FILE);
             } catch (SecurityException e) {
-                System.err.println("Security manager denied read access: " + e.getMessage());
+                System.err.println("SER04-J: Security manager blocked read: " + e.getMessage());
                 return null;
             }
         }
@@ -158,59 +166,70 @@ public class SaveFile {
         }
 
         try {
-            byte[] fileData = Files.readAllBytes(file.toPath());
-
-            // SER02-J: Sign then seal - reverse order: unseal then verify
-            // For now, we just use the raw data
-            if (encryptionKey != null) {
-                System.out.println("SER02-J: Decryption key provided, but not implemented yet");
+            byte[] sealedData = Files.readAllBytes(file.toPath());
+            if (encryptionKey == null || verificationKey == null) {
+                System.err.println("SER02-J: Decryption and verification keys required");
+                return null;
             }
-            if (verificationKey != null) {
-                System.out.println("SER02-J: Verification key provided, but not implemented yet");
+            
+            // SER02-J: Unseal first (decrypt)
+            byte[] unsealedData = decryptData(sealedData, encryptionKey);
+            if (unsealedData == null) {
+                System.err.println("SER02-J: Decryption failed");
+                return null;
             }
-
-            byte[] serializedData = fileData; // Would be decrypted data in real impl
-
-            // SER12-J: Use SafeObjectInputStream to prevent untrusted deserialization
-            try (ByteArrayInputStream bais = new ByteArrayInputStream(serializedData); SafeObjectInputStream ois = new SafeObjectInputStream(bais)) {
-
-                // FIO53-J: Use readUnshared() with care
-                // We use readObject() for shared objects. If we need unshared, use readUnshared()
+            
+            // Split data and signature (signature is 256 bytes for RSA-2048)
+            int sigLen = 256;
+            if (unsealedData.length <= sigLen) {
+                System.err.println("SER02-J: Data too short to contain signature");
+                return null;
+            }
+            byte[] serializedData = new byte[unsealedData.length - sigLen];
+            byte[] signature = new byte[sigLen];
+            System.arraycopy(unsealedData, 0, serializedData, 0, serializedData.length);
+            System.arraycopy(unsealedData, serializedData.length, signature, 0, sigLen);
+            
+            // SER02-J: Then verify signature
+            if (!verifySignature(serializedData, signature, verificationKey)) {
+                System.err.println("SER02-J: Signature verification failed - data may be tampered");
+                return null;
+            }
+            
+            // SER12-J: Safe deserialization
+            try (ByteArrayInputStream bais = new ByteArrayInputStream(serializedData);
+                 SafeObjectInputStream ois = new SafeObjectInputStream(bais)) {
+                
                 Object obj = ois.readObject();
-
                 if (!(obj instanceof Player)) {
-                    System.err.println("Loaded object is not a Player");
+                    System.err.println("Load error: Not a Player object");
                     return null;
                 }
-
+                
                 Player player = (Player) obj;
-
-                // SER12-J: Additional validation of deserialized data
+                
+                // SER12-J: Additional validation
                 if (!validatePlayer(player)) {
                     System.err.println("Player validation failed after deserialization");
                     return null;
                 }
-
-                System.out.println("Player loaded successfully");
+                
+                System.out.println("Player loaded securely (SER02-J: verified+decrypted)");
                 return player;
-
+                
             } catch (InvalidClassException e) {
-                // SER12-J: Catch whitelist violations
-                System.err.println("SER12-J: Untrusted class in save file: " + e.getMessage());
+                System.err.println("SER12-J: Untrusted class: " + e.getMessage());
                 return null;
             }
-
-        } catch (FileNotFoundException e) {
-            System.out.println("Save file not found");
-            return null;
+            
         } catch (IOException e) {
-            System.err.println("Error reading save file: " + e.getMessage());
+            System.err.println("Error reading save file (ERR53-J): " + e.getMessage());
             return null;
         } catch (ClassNotFoundException e) {
-            System.err.println("Player class not found: " + e.getMessage());
+            System.err.println("Player class not found (ERR53-J): " + e.getMessage());
             return null;
         } catch (Exception e) {
-            System.err.println("Unexpected error during load: " + e.getMessage());
+            System.err.println("Unexpected load error (ERR53-J): " + e.getMessage());
             return null;
         }
     }
@@ -228,126 +247,135 @@ public class SaveFile {
             return false; // MET54-J: Provide feedback
         }
 
-        // Check username (assuming Player has getUsername())
+        // Check playerId (non-null, non-empty)
         try {
-            String username = player.getUsername();
-            if (username == null || username.trim().isEmpty()) {
-                System.err.println("Validation error: Invalid username");
+            String pid = player.getPlayerId();
+            if (pid == null || pid.trim().isEmpty()) {
+                System.err.println("Validation error: Invalid playerId");
                 return false;
             }
         } catch (Exception e) {
-            System.err.println("Validation error: Cannot get username: " + e.getMessage());
+            System.err.println("Validation error: Cannot get playerId: " + e.getMessage());
             return false;
         }
 
-        // Check chips (non-negative)
+        // Check name (non-null, non-empty)
         try {
-            int chips = player.getChips();
+            String name = player.getName();
+            if (name == null || name.trim().isEmpty()) {
+                System.err.println("Validation error: Invalid name");
+                return false;
+            }
+        } catch (Exception e) {
+            System.err.println("Validation error: Cannot get name: " + e.getMessage());
+            return false;
+        }
+
+        // Check chipBalance (non-negative)
+        try {
+            int chips = player.getChipBalance();
             if (chips < 0) {
-                System.err.println("Validation error: Chips cannot be negative");
+                System.err.println("Validation error: Negative chipBalance");
                 return false;
             }
         } catch (Exception e) {
-            System.err.println("Validation error: Cannot get chips: " + e.getMessage());
+            System.err.println("Validation error: Cannot get chipBalance: " + e.getMessage());
             return false;
         }
 
-        // Check games played (non-negative, games won <= games played)
+        // SER03-J: Verify transient field (email) is null after deserialization
         try {
-            int gamesPlayed = player.getGamesPlayed();
-            if (gamesPlayed < 0) {
-                System.err.println("Validation error: Games played cannot be negative");
+            String email = player.getEmail(); // assumes Player has getEmail()
+            if (email != null) {
+                System.err.println("SER03-J Violation: email should be null (transient)");
                 return false;
             }
         } catch (Exception e) {
-            System.err.println("Validation error: Cannot get games played: " + e.getMessage());
-            return false;
+            // If method doesn't exist, skip
         }
 
-        try {
-            int gamesWon = player.getGamesWon();
-            int gamesPlayed = player.getGamesPlayed();
-            if (gamesWon > gamesPlayed) {
-                System.err.println("Validation error: Games won exceeds games played");
-                return false;
-            }
-        } catch (Exception e) {
-            // If method doesn't exist, skip this check
-        }
-
-        return true; // MET54-J: Return true for success
+        return true; // MET54-J
     }
 
     // SER11-J: Prevent overwriting of externalizable objects
     // Note: SER11-J applies to Externalizable; not needed for Serializable.
     // If Player used Externalizable, a guard in readExternal() would be needed.
+
+    // Helper function
+    // SER02-J: Sign data with private key
+    private byte[] signData(byte[] data, PrivateKey privateKey) {
+        try {
+            Signature sig = Signature.getInstance("SHA256withRSA");
+            sig.initSign(privateKey);
+            sig.update(data);
+            return sig.sign();
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+            System.err.println("Signing error: " + e.getMessage());
+            return null;
+        }
+    }
+
+    // SER02-J: Encrypt data with AES
+    private byte[] encryptData(byte[] data, SecretKey key) {
+        try {
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            return cipher.doFinal(data);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                | IllegalBlockSizeException | BadPaddingException e) {
+            System.err.println("Encryption error: " + e.getMessage());
+            return null;
+        }
+    }
 }
 
-class EncryptAndDecrypt
-{
+class EncryptAndDecrypt {
+
     private static final String UNICODE_FORMAT = "UTF-8";
 
-    public static SecretKey generateKey (String encryptionType) throws NoSuchAlgorithmException // encryptionType is AES
+    public static SecretKey generateKey(String encryptionType) throws NoSuchAlgorithmException // encryptionType is AES
     {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(encryptionType);
         SecretKey myKey = keyGenerator.generateKey();
         return myKey;
     }
 
-    public static byte[] encryptData (String dataToEncrypt, SecretKey myKey, Cipher cipher)
-    {
-        try
-        {
+    public static byte[] encryptData(String dataToEncrypt, SecretKey myKey, Cipher cipher) {
+        try {
             byte[] text = dataToEncrypt.getBytes(UNICODE_FORMAT);
             cipher.init(Cipher.ENCRYPT_MODE, myKey);
             byte[] cipherText = cipher.doFinal(text);
 
             return cipherText;
-        }
-        catch (UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             System.out.println("Unsupported encoding exception: " + e.getMessage());
             return null;
-        }
-        catch (InvalidKeyException e)
-        {
+        } catch (InvalidKeyException e) {
             System.out.println("Invalid key exception: " + e.getMessage());
             return null;
-        }
-        catch (IllegalBlockSizeException e)
-        {
+        } catch (IllegalBlockSizeException e) {
             System.out.println("Illegal block size exception: " + e.getMessage());
             return null;
-        }
-        catch (BadPaddingException e)
-        {
+        } catch (BadPaddingException e) {
             System.out.println("Bad padding exception: " + e.getMessage());
             return null;
         }
     }
 
-    public static String decryptData(byte[] dataToDecrypt, SecretKey myKey, Cipher cipher)
-    {
-        try
-        {
+    public static String decryptData(byte[] dataToDecrypt, SecretKey myKey, Cipher cipher) {
+        try {
             cipher.init(Cipher.DECRYPT_MODE, myKey);
             byte[] plainText = cipher.doFinal(dataToDecrypt);
             String result = new String(plainText);
 
             return result;
-        }
-        catch (InvalidKeyException e)
-        {
+        } catch (InvalidKeyException e) {
             System.out.println("Invalid key exception: " + e.getMessage());
             return null;
-        }
-        catch (IllegalBlockSizeException e)
-        {
+        } catch (IllegalBlockSizeException e) {
             System.out.println("Illegal block size exception: " + e.getMessage());
             return null;
-        }
-        catch (BadPaddingException e)
-        {
+        } catch (BadPaddingException e) {
             System.out.println("Bad padding exception: " + e.getMessage());
             return null;
         }
@@ -380,6 +408,5 @@ class EncryptAndDecrypt
         }
     }
 
-        */
+     */
 }
-
