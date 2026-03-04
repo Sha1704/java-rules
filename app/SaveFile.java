@@ -64,9 +64,8 @@ public class SaveFile {
      * SER03-J, SER04-J, MET54-J, ERR53-J, FIO53-J.
      *
      * @param player the player object to save
-     * @param encryptionKey the secret key for encryption (null if no
-     * encryption)
-     * @param signatureKey the private key for signing (null if no signing)
+     * @param encryptionKey the secret key for encryption
+     * @param signatureKey the private key for signing
      * @return true if save succeeded, false otherwise with error message
      */
     public boolean savePlayer(Player player, SecretKey encryptionKey, PrivateKey signatureKey) {
@@ -142,10 +141,8 @@ public class SaveFile {
      * Loads a player object from disk securely. This method follows SER02-J,
      * SER04-J, SER12-J, MET54-J, ERR53-J, FIO53-J.
      *
-     * @param encryptionKey the secret key for decryption (null if no
-     * encryption)
-     * @param verificationKey the public key for signature verification (null if
-     * no signing)
+     * @param encryptionKey the secret key for decryption
+     * @param verificationKey the public key for signature verification
      * @return the loaded Player object, or null if load fails
      */
     public Player loadPlayer(SecretKey encryptionKey, PublicKey verificationKey) {
@@ -181,7 +178,7 @@ public class SaveFile {
                 return null;
             }
 
-            // Split data and signature (signature is 256 bytes for RSA-2048)
+            // Split data and signature
             int sigLen = 256;
             if (unsealedData.length <= sigLen) {
                 System.err.println("SER02-J: Data too short to contain signature");
@@ -248,17 +245,17 @@ public class SaveFile {
             return false; // MET54-J: Provide feedback
         }
 
-        // Check playerId (non-null, non-empty)
-        try {
-            String pid = player.getPlayerId();
-            if (pid == null || pid.trim().isEmpty()) {
-                System.err.println("Validation error: Invalid playerId");
-                return false;
-            }
-        } catch (Exception e) {
-            System.err.println("Validation error: Cannot get playerId: " + e.getMessage());
-            return false;
-        }
+        // // Check playerId (non-null, non-empty)
+        // try {
+        //     String pid = player.getPlayerId();
+        //     if (pid == null || pid.trim().isEmpty()) {
+        //         System.err.println("Validation error: Invalid playerId");
+        //         return false;
+        //     }
+        // } catch (Exception e) {
+        //     System.err.println("Validation error: Cannot get playerId: " + e.getMessage());
+        //     return false;
+        // }
 
         // Check name (non-null, non-empty)
         try {
@@ -286,13 +283,14 @@ public class SaveFile {
 
         // SER03-J: Verify transient field (playerId) is null after deserialization
         try {
-            String pID = player.getPlayerId();
-            if (pID != null) {
+            //String pID = player.getPlayerId();
+            if (player.getPlayerId() != null) {
                 System.err.println("SER03-J Violation: playerID should be null (transient)");
                 return false;
             }
         } catch (Exception e) {
-            // If method doesn't exist, skip
+            System.err.println("Validation error: Cannot get playerId: " + e.getMessage());
+            return false;
         }
 
         return true; // MET54-J
