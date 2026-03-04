@@ -43,6 +43,7 @@ public class Dealer{
 
     //Dealer hits until hand value is 17 or more
     public void playTurn(Deck deck){
+        Objects.requireNonNull(deck, "deck must not be null");
         while(getHandValue() < 17){
             Card newCard = deck.drawCard();
             if(newCard != null){
