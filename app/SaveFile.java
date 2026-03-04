@@ -1,11 +1,34 @@
 package app;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InvalidClassException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
-import java.security.*;
-import java.sql.*;
-import java.util.*;
-import javax.crypto.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Base64;
+import java.util.Set;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 
 public class SaveFile {
 
@@ -375,13 +398,16 @@ class EncryptAndDecrypt {
         String USER = "IT326S09";
         String PASS = "pink22";
 
-        String query = "INSERT INTO account_balance ('key') VALUES (?)";
+        String query = "INSERT INTO account_balance ('key') VALUES (?)"; 
+        
+        Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+        PreparedStatement stmt = conn.prepareStatement(query);
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-                PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, encodedKey);
-            stmt.executeUpdate();
-        }
+        stmt.setString(1, encodedKey);
+        stmt.executeUpdate();
+
+        stmt.close();
+        conn.close();
 
         return myKey;
     }
