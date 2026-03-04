@@ -1,10 +1,20 @@
-// OBJ09-J. Compare classes and not class names
-// Implement account type check using class objects
+/**
+ * Rule OBJ09-J. Compare classes and not class names
+ * 
+ * Implement account type check using class objects
+ * 
+ * @author Dariya
+ */
 package Dariya_Rules;
 
 public class OBJ09 {
 
-    // method check if the account is a premium by comparing class obj
+    /**
+     * check if the given account is a premium by comparing class obj
+     * 
+     * @param acc the account object to check
+     * @return true if acc is of class premiumAcc, otherwise false
+     */
     public static boolean isPremiumAcc(Object acc) {
         return acc.getClass() == premiumAcc.class;
     }
@@ -20,10 +30,14 @@ public class OBJ09 {
     }
 }
 
-// Premium game account
+/**
+ * Premium game account
+ */
 class premiumAcc {
 }
 
-// Regular game account
+/**
+ * Regular game account
+ */
 class regularAcc {
 }
