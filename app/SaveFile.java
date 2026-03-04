@@ -288,7 +288,7 @@ public class SaveFile {
 
         // Check chipBalance (non-negative)
         try {
-            int chips = player.getChipBalance();
+            double chips = player.getChipBalance();
             if (chips < 0) {
                 System.err.println("Validation error: Negative chipBalance");
                 return false;
@@ -300,9 +300,9 @@ public class SaveFile {
 
         // SER03-J: Verify transient field (playerId) is null after deserialization
         try {
-            // String pID = player.getPlayerId();
-            if (player.getPlayerId() != null) {
-                System.err.println("SER03-J Violation: playerID should be null (transient)");
+            // int pID = player.getPlayerId();
+            if (player.getPlayerId() != 0) {
+                System.err.println("SER03-J Violation: playerId should be 0 (transient)");
                 return false;
             }
         } catch (Exception e) {

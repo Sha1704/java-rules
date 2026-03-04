@@ -10,9 +10,9 @@ class Regular {
     // private fields to ensure data safety (OBJ01, OBJ05)
     private final Date lastLogin;
     private String playerName;
-    private double balance;
+
     private int gamesPlayed;
-    private int balance;
+    private double balance;
 
     /**
      * public constructor for new player acc

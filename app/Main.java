@@ -456,7 +456,6 @@ public class Main {
                         System.out.println("chose to PLAY.");
                         playGame(scanner, gamePlayer,conn);
 
-                        System.out.println("Starting a game of Blackjack...");
                         break;
 
                     case "2":

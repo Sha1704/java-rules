@@ -17,7 +17,7 @@ public class Player implements Serializable{
     //Declaring variables
     private static final Logger LOGGER = Logger.getLogger(Player.class.getName());
     private static final long serialVersionUID = 1L; //SER01-J: Explicit serialVersionUID for Serializable class
-    private transient final String playerId; //SER03-J: Sensitive field not serialized
+    private transient final int playerId; //SER03-J: Sensitive field not serialized
     private final String name;
     //VNA00-J: volatile variable for visibility across threads
     private volatile double chipBalance; //changed to double
