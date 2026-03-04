@@ -238,19 +238,6 @@ public class SaveFile {
             return false; // MET54-J: Provide feedback
         }
 
-        // // Check playerId (non-null, non-empty)
-        // try {
-        // String pid = player.getPlayerId();
-        // if (pid == null || pid.trim().isEmpty()) {
-        // System.err.println("Validation error: Invalid playerId");
-        // return false;
-        // }
-        // } catch (Exception e) {
-        // System.err.println("Validation error: Cannot get playerId: " +
-        // e.getMessage());
-        // return false;
-        // }
-
         // Check name (non-null, non-empty)
         try {
             String name = player.getName();
@@ -263,17 +250,17 @@ public class SaveFile {
             return false;
         }
 
-        // Check chipBalance (non-negative)
-        try {
-            int chips = player.getChipBalance();
-            if (chips < 0) {
-                System.err.println("Validation error: Negative chipBalance");
-                return false;
-            }
-        } catch (Exception e) {
-            System.err.println("Validation error: Cannot get chipBalance: " + e.getMessage());
-            return false;
-        }
+        // // Check chipBalance (non-negative)
+        // try {
+        //     //int chips = player.getChipBalance();
+        //     if (chips < 0) {
+        //         System.err.println("Validation error: Negative chipBalance");
+        //         return false;
+        //     }
+        // } catch (Exception e) {
+        //     System.err.println("Validation error: Cannot get chipBalance: " + e.getMessage());
+        //     return false;
+        // }
 
         // SER03-J: Verify transient field (playerId) is null after deserialization
         try {
