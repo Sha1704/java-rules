@@ -10,8 +10,8 @@ class Regular {
     // private fields to ensure data safety (OBJ01, OBJ05)
     private final Date lastLogin;
     private String playerName;
-    private int balance;
     private int gamesPlayed;
+    protected int balance;
 
     /**
      * public constructor for new player acc
@@ -104,11 +104,15 @@ class Regular {
         // subtract bet from balance if enough funds
         if(bet <= balance){
             balance -= bet;
+            System.out.println("Bet placed: " + bet);
+            System.out.println("Remaining balance: " + balance);
         } else {
             throw new IllegalArgumentException("Insufficient Balance");
         }
         // track game played
         gamesPlayed++;
+        System.out.println("Games played: " + gamesPlayed);
+        System.out.println("");
     }
 
     /**

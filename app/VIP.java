@@ -19,7 +19,7 @@ final class VIP extends Regular {
      * unmodifiable list of available VIP perks (OBJ10 & OBJ13)
      */
     private static final List<String> AVAILABLE_PERKS = 
-        Collections.unmodifiableList(Arrays.asList("CardCounting", "LoungeAccess"));
+        Collections.unmodifiableList(Arrays.asList("Bonus", "LoungeAccess"));
 
     /**
      * constructor fully initializes object (OBJ11)
@@ -37,14 +37,13 @@ final class VIP extends Regular {
         this.vipBoostActive = true;
         // Short lived messages (OBJ52)
         gameMessage("\nYou have been promoted to VIP!");
-        gameMessage("Available VIP perks: " + AVAILABLE_PERKS);
         // temporary buffer for logging (OBJ53)
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         buffer.put(("VIP promotion for " + playerName).getBytes());
         buffer.flip();
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
-        System.out.println("\nVIP promotion event occurred");
+        System.out.println("VIP promotion event occurred");
     }
 
     /**
@@ -78,8 +77,8 @@ final class VIP extends Regular {
      * use the selected perk if one has been chosen (OBJ01)
      */
     public void usePerk(){
-        if(selectedPerk.equals("CardCounting")){
-            useCardCounting();
+        if(selectedPerk.equals("Bonus")){
+            extraBalance();
         } else if(selectedPerk.equals("LoungeAccess")){
             accessLounge();
         } else {
@@ -97,9 +96,12 @@ final class VIP extends Regular {
     }
 
     // private helper methods for perks
-    private void useCardCounting(){
-        System.out.println("Using card counting strategy!");
-        // Azul card counting logic here
+    private void extraBalance(){
+        System.out.println("Accessing VIP bonus perk: Extra Balance!");
+        // Give an extra 100 to the player's balance
+        int bonus = 100;
+        this.balance += bonus;
+        System.out.println("Your balance has increased by " + bonus + "!");   
     }
     private void accessLounge(){
         System.out.println("Accessing VIP Lounge! Enjoy your perks!");
