@@ -1,41 +1,19 @@
 package app;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InvalidClassException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectStreamClass;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.file.Files;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.util.Base64;
-import java.util.Set;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
+import java.security.*;
+import java.sql.*;
+import java.util.*;
+import javax.crypto.*;
 
 public class SaveFile {
 
     // File name for storing player data
     private static final String SAVE_FILE = "player_profile.dat";
 
-    // WHITELIST of allowed classes for SER12-J (prevents deserializing untrusted classes)
+    // WHITELIST of allowed classes for SER12-J (prevents deserializing untrusted
+    // classes)
     private static final Set<String> SAFE_CLASSES = Set.of(
             // Game classes
             "app.Player",
@@ -45,8 +23,7 @@ public class SaveFile {
             "java.lang.String",
             "java.lang.Integer",
             "java.util.ArrayList",
-            "java.util.List"
-    );
+            "java.util.List");
 
     /**
      * Custom ObjectInputStream that checks every class against a whitelist
@@ -66,8 +43,7 @@ public class SaveFile {
             // SER12-J: Check if class is in whitelist
             if (!SAFE_CLASSES.contains(className)) {
                 throw new InvalidClassException(
-                        "SER12-J Violation: Untrusted class '" + className + "' not allowed"
-                );
+                        "SER12-J Violation: Untrusted class '" + className + "' not allowed");
             }
 
             return super.resolveClass(desc);
@@ -78,9 +54,9 @@ public class SaveFile {
      * Saves a player object to disk. This method follows SER01-J, SER02-J,
      * SER03-J, SER04-J, MET54-J, ERR53-J, FIO53-J.
      *
-     * @param player the player object to save
+     * @param player        the player object to save
      * @param encryptionKey the secret key for encryption
-     * @param signatureKey the private key for signing
+     * @param signatureKey  the private key for signing
      * @return true if save succeeded, false otherwise with error message
      */
     public boolean savePlayer(Player player, SecretKey encryptionKey, PrivateKey signatureKey) {
@@ -91,7 +67,7 @@ public class SaveFile {
         }
 
         // SER04-J: Check security manager before writing
-        @SuppressWarnings("removal") //SER04 requires us to use SecurityManager, which is causing this
+        @SuppressWarnings("removal") // SER04 requires us to use SecurityManager, which is causing this
         SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
             try {
@@ -102,7 +78,8 @@ public class SaveFile {
             }
         }
 
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos)) {
 
             // SER01-J: Do not deviate - using proper signature
             oos.writeObject(player); // Calls Player.writeObject if defined
@@ -156,13 +133,13 @@ public class SaveFile {
      * Loads a player object from disk securely. This method follows SER02-J,
      * SER04-J, SER12-J, MET54-J, ERR53-J, FIO53-J.
      *
-     * @param encryptionKey the secret key for decryption
+     * @param encryptionKey   the secret key for decryption
      * @param verificationKey the public key for signature verification
      * @return the loaded Player object, or null if load fails
      */
     public Player loadPlayer(SecretKey encryptionKey, PublicKey verificationKey) {
         // SER04-J: Security manager check before reading
-        @SuppressWarnings("removal") //SER04 requires us to use SecurityManager, which is causing this
+        @SuppressWarnings("removal") // SER04 requires us to use SecurityManager, which is causing this
         SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
             try {
@@ -211,7 +188,8 @@ public class SaveFile {
             }
 
             // SER12-J: Safe deserialization
-            try (ByteArrayInputStream bais = new ByteArrayInputStream(serializedData); SafeObjectInputStream ois = new SafeObjectInputStream(bais)) {
+            try (ByteArrayInputStream bais = new ByteArrayInputStream(serializedData);
+                    SafeObjectInputStream ois = new SafeObjectInputStream(bais)) {
 
                 Object obj = ois.readObject();
                 if (!(obj instanceof Player)) {
@@ -262,14 +240,15 @@ public class SaveFile {
 
         // // Check playerId (non-null, non-empty)
         // try {
-        //     String pid = player.getPlayerId();
-        //     if (pid == null || pid.trim().isEmpty()) {
-        //         System.err.println("Validation error: Invalid playerId");
-        //         return false;
-        //     }
+        // String pid = player.getPlayerId();
+        // if (pid == null || pid.trim().isEmpty()) {
+        // System.err.println("Validation error: Invalid playerId");
+        // return false;
+        // }
         // } catch (Exception e) {
-        //     System.err.println("Validation error: Cannot get playerId: " + e.getMessage());
-        //     return false;
+        // System.err.println("Validation error: Cannot get playerId: " +
+        // e.getMessage());
+        // return false;
         // }
 
         // Check name (non-null, non-empty)
@@ -298,7 +277,7 @@ public class SaveFile {
 
         // SER03-J: Verify transient field (playerId) is null after deserialization
         try {
-            //String pID = player.getPlayerId();
+            // String pID = player.getPlayerId();
             if (player.getPlayerId() != null) {
                 System.err.println("SER03-J Violation: playerID should be null (transient)");
                 return false;
@@ -314,7 +293,7 @@ public class SaveFile {
     /**
      * SER02-J: Signs the given data using the specified private key.
      *
-     * @param data the data to sign
+     * @param data       the data to sign
      * @param privateKey the private key for signing
      * @return the signature as a byte array, or null if signing fails
      */
@@ -334,7 +313,7 @@ public class SaveFile {
      * SER02-J: Encrypts the given data using the specified secret key.
      *
      * @param data the data to encrypt
-     * @param key the secret key for encryption
+     * @param key  the secret key for encryption
      * @return the encrypted data as a byte array, or null if encryption fails
      */
     private byte[] encryptData(byte[] data, SecretKey key) {
@@ -353,7 +332,7 @@ public class SaveFile {
      * SER02-J: Verifies the signature of the given data using the specified
      * public key.
      *
-     * @param data the data that was signed
+     * @param data      the data that was signed
      * @param signature the signature to verify
      * @param publicKey the public key for verification
      * @return true if the signature is valid, false otherwise
@@ -375,7 +354,7 @@ public class SaveFile {
      * secret key.
      *
      * @param encryptedData the data to decrypt
-     * @param key the secret key for decryption
+     * @param key           the secret key for decryption
      * @return the decrypted data as a byte array, or null if decryption fails
      */
     private byte[] decryptData(byte[] encryptedData, SecretKey key) {
@@ -395,7 +374,7 @@ class EncryptAndDecrypt {
 
     private static final String UNICODE_FORMAT = "UTF-8";
 
-    public static SecretKey generateKey (String encryptionType) throws Exception // encryptionType is AES
+    public static SecretKey generateKey(String encryptionType) throws Exception // encryptionType is AES
     {
         // Generate AES key
         KeyGenerator keyGenerator = KeyGenerator.getInstance(encryptionType);
@@ -409,16 +388,13 @@ class EncryptAndDecrypt {
         String USER = "IT326S09";
         String PASS = "pink22";
 
-        String query = "INSERT INTO account_balance ('key') VALUES (?)"; 
-        
-        Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-        PreparedStatement stmt = conn.prepareStatement(query);
+        String query = "INSERT INTO account_balance ('key') VALUES (?)";
 
-        stmt.setString(1, encodedKey);
-        stmt.executeUpdate();
-
-        stmt.close();
-        conn.close();
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, encodedKey);
+            stmt.executeUpdate();
+        }
 
         return myKey;
     }
@@ -464,32 +440,33 @@ class EncryptAndDecrypt {
         }
     }
 
-    /* example of encrypting and decrypting
-
-    public static void main (String [] args)
-    {
-        String text = "This is an example main code";
-        try 
-        {
-            SecretKey key = generateKey("AES");
-            Cipher chipher;
-            chipher = Cipher.getInstance("AES");
-            
-            byte[] encryptedData = encryptData(text, key, chipher);
-            String encryptedString = new String(encryptedData);
-            System.out.println(encryptedString);
-            String decrypted = decryptData(encryptedData, key, chipher);
-            System.out.println(decrypted);
-        } 
-        catch (NoSuchAlgorithmException e)
-        {
-            System.out.println("No such algorithm exception: " + e.getMessage());
-        }
-        catch (NoSuchPaddingException e)
-        {
-            System.out.println("No such padding exception: " + e.getMessage());
-        }
-    }
-
+    /*
+     * example of encrypting and decrypting
+     * 
+     * public static void main (String [] args)
+     * {
+     * String text = "This is an example main code";
+     * try
+     * {
+     * SecretKey key = generateKey("AES");
+     * Cipher chipher;
+     * chipher = Cipher.getInstance("AES");
+     * 
+     * byte[] encryptedData = encryptData(text, key, chipher);
+     * String encryptedString = new String(encryptedData);
+     * System.out.println(encryptedString);
+     * String decrypted = decryptData(encryptedData, key, chipher);
+     * System.out.println(decrypted);
+     * }
+     * catch (NoSuchAlgorithmException e)
+     * {
+     * System.out.println("No such algorithm exception: " + e.getMessage());
+     * }
+     * catch (NoSuchPaddingException e)
+     * {
+     * System.out.println("No such padding exception: " + e.getMessage());
+     * }
+     * }
+     * 
      */
 }
