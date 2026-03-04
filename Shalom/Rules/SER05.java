@@ -3,6 +3,7 @@ package Shalom.Rules;
 /**
  * RULE SER05-J: Do not serialize a non static inner class because it serializes 
  * the outer class and may cause unexpected behavior and errors
+ * @author: Adiboshi Shalom
  */
 
 import java.io.FileOutputStream;
