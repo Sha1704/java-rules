@@ -33,7 +33,7 @@ public class Dealer{
 
     //get all card in hand - list
     public List<Card> getHandCards(){
-        return hand.getCards();
+        return List.copyOf(hand.getCards());
     }
 
     //reset hand for new round

@@ -1,5 +1,6 @@
 package app;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Represents a playing card with a rank and suit.
@@ -17,7 +18,7 @@ public class Card {
     //The ranks in a standard deck of cards, with associated values for Blackjack.
     public enum Rank {
         TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6), SEVEN(7), EIGHT(8), NINE(9), TEN(10),
-        JACK(10), QUEEN(10), KING(10), ACE(1);
+        JACK(10), QUEEN(10), KING(10), ACE(11);
 
         private final int value;
         
@@ -69,7 +70,20 @@ public class Card {
         return rank + " of " + suit;
     }
 
-        /**
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Card)) return false;
+        Card other = (Card) obj;
+        return rank == other.rank && suit == other.suit;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rank, suit);
+    }
+
+    /**
      * Compares two arrays of cards for equality 
      * EXP02-J: Compare arrays correctly
      * @param a the first array
