@@ -12,7 +12,7 @@ public class Hand {
     //Declaring variables
     private static final Logger LOGGER = Logger.getLogger(Hand.class.getName());
     private final List<Card> cards;
-    private int bet;
+    private double bet;
     private boolean isStanding;
     private boolean isBusted;
 
@@ -83,18 +83,18 @@ public class Hand {
      * Set bet amount for the hand.
      * @param bet - amount of chips to bet on this hand
      */
-    public void setBet(int bet) {
+    public void setBet(double bet) {
         if (bet < 0) {
             return; //ERR08-J: Prevent NullPointerExceptions 
         }
-        this.bet = bet;
+        this.bet =  bet;
     }
 
     /**
      * Get the current bet amount for the hand.
      * @return - current bet amount
      */
-    public int getBet() {
+    public double getBet() {
         return bet;
     }
 

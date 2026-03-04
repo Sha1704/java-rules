@@ -7,11 +7,11 @@ class Regular {
     // private fields to ensure data safety (OBJ01, OBJ05)
     private final Date lastLogin;
     private String playerName;
-    private int balance;
+    private double balance;
     private int gamesPlayed;
 
     // constructor fully initializes obj and validates state (OBJ11)
-    public Regular(String playerName, int initialBalance){
+    public Regular(String playerName, double initialBalance){
         if(playerName == null || playerName.isBlank()){
             throw new IllegalArgumentException("Player name cannot be blank");
         }
@@ -53,7 +53,7 @@ class Regular {
     public String getPlayerName(){
         return playerName;
     }
-    public int getBalance(){
+    public double getBalance(){
         return balance;
     }
     public int getGamesPlayed(){
@@ -74,6 +74,16 @@ class Regular {
         // track game played
         gamesPlayed++;
     }
+
+    public void addWinnings(double amount){
+        if(amount < 0){
+            throw new IllegalArgumentException("Winnings amount cannot be negative!");
+        }
+        balance += amount;
+    }
+
+    
+    
 
     // check if regular acc eligible for VIP promotion
     public boolean isEligibleForVIP(){
