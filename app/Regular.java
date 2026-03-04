@@ -11,7 +11,7 @@ class Regular {
     private final Date lastLogin;
     private String playerName;
     private int gamesPlayed;
-    protected int balance;
+    private int balance;
 
     /**
      * public constructor for new player acc
@@ -113,6 +113,18 @@ class Regular {
         gamesPlayed++;
         System.out.println("Games played: " + gamesPlayed);
         System.out.println("");
+    }
+
+    /**
+     * Add extra money to player balance
+     * 
+     * @param amount amount that add to balance 
+     */
+    protected final void addBalance(int amount){
+        if (amount < 0){
+            throw new IllegalArgumentException("Amount cannot be negative");
+        }
+        this.balance += amount;
     }
 
     /**

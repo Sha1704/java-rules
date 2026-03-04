@@ -79,8 +79,12 @@ final class VIP extends Regular {
     public void usePerk(){
         if(selectedPerk.equals("Bonus")){
             extraBalance();
+            selectedPerk = "";
+            vipBoostActive = false;
         } else if(selectedPerk.equals("LoungeAccess")){
             accessLounge();
+            selectedPerk = "";
+            vipBoostActive = false;
         } else {
             System.out.println("No perk selected yet.");
         }
@@ -100,8 +104,8 @@ final class VIP extends Regular {
         System.out.println("Accessing VIP bonus perk: Extra Balance!");
         // Give an extra 100 to the player's balance
         int bonus = 100;
-        this.balance += bonus;
-        System.out.println("Your balance has increased by " + bonus + "!");   
+        addBalance(bonus);
+        System.out.println("Your balance has increased by " + bonus + "!");  
     }
     private void accessLounge(){
         System.out.println("Accessing VIP Lounge! Enjoy your perks!");
