@@ -27,7 +27,7 @@ public class Deck {
     private void initializeDeck() {
         for (Card.Suit suit : Card.Suit.values()) {
             for (Card.Rank rank : Card.Rank.values()) {
-                cards.push(new Card(suit, rank));
+                cards.push(new Card(rank, suit));
             }
         }
     }
