@@ -12,6 +12,7 @@ import java.io.Serializable;
  * RULE SER07-J: Always manually validate objects after 
  * deserialization because deserilization can create an 
  * object without calling its constructor which is dangerous.
+ * @author: Adiboshi Shalom
  */
 class BankAccount implements Serializable {
 
@@ -106,7 +107,7 @@ public class SER07 {
             FileInputStream inputStream = new FileInputStream("Shalom/Rules/SER07.txt");
             ObjectInputStream in = new ObjectInputStream(inputStream);
 
-            BankAccount loadedAccount = (BankAccount) in.readObxject();
+            BankAccount loadedAccount = (BankAccount) in.readObject();
 
             in.close();
 
