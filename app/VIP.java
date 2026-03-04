@@ -3,6 +3,7 @@ import java.util.Date;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.nio.ByteBuffer;
 
 /**
  * Represents a VIP blackjack acc, inheriting from regular acc
@@ -34,8 +35,16 @@ final class VIP extends Regular {
             throw new IllegalStateException("Account is not eligible for VIP promotion");
         }
         this.vipBoostActive = true;
-        System.out.println("\n You have been promoted to VIP!");
-        System.out.println("Available VIP perks: " + AVAILABLE_PERKS);
+        // Short lived messages (OBJ52)
+        gameMessage("\nYou have been promoted to VIP!");
+        gameMessage("Available VIP perks: " + AVAILABLE_PERKS);
+        // temporary buffer for logging (OBJ53)
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        buffer.put(("VIP promotion for " + playerName).getBytes());
+        buffer.flip();
+        byte[] bytes = new byte[buffer.remaining()];
+        buffer.get(bytes);
+        System.out.println("\nEvent: " + new String(bytes));
     }
 
     /**
@@ -76,6 +85,15 @@ final class VIP extends Regular {
         } else {
             System.out.println("No perk selected yet.");
         }
+    }
+
+    /**
+     * print temporary game message 
+     * 
+     * @param message the msg text to display should be short lived
+     */
+    private void gameMessage(String message){
+        System.out.println(message);
     }
 
     // private helper methods for perks
