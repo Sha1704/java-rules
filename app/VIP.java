@@ -14,6 +14,8 @@ final class VIP extends Regular {
     // private field to control VIP boost and stores chosen perk (OBJ01)
     private boolean vipBoostActive;
     private String selectedPerk = "";
+    private boolean bonusUsed;
+    private boolean loungeAccessUsed;
 
     /**
      * unmodifiable list of available VIP perks (OBJ10 & OBJ13)
@@ -78,16 +80,25 @@ final class VIP extends Regular {
      */
     public void usePerk(){
         if(selectedPerk.equals("Bonus")){
+            if(bonusUsed){
+                System.out.println("Bonus perk already used.");
+                return;
+            }
             extraBalance();
             selectedPerk = "";
-            vipBoostActive = false;
+            bonusUsed = true;
         } else if(selectedPerk.equals("LoungeAccess")){
+            if(loungeAccessUsed){
+                System.out.println("Lounge access perk already used.");
+                return;
+            }
             accessLounge();
             selectedPerk = "";
-            vipBoostActive = false;
+            loungeAccessUsed = true;
         } else {
             System.out.println("No perk selected yet.");
         }
+        vipBoostActive = ! (bonusUsed && loungeAccessUsed);
     }
 
     /**
