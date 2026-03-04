@@ -1,36 +1,34 @@
 package app;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InvalidClassException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
-import java.security.*;
-import java.util.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Base64;
+import java.util.Set;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-
-import javax.crypto.SecretKey;
-
-import java.security.*;
-
-/**
- * Handles secure saving and loading of player profiles. Implements CERT rules
- * for serialization safety.
- */
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.util.Base64;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
 
 public class SaveFile {
 
@@ -397,7 +395,6 @@ class EncryptAndDecrypt {
 
     private static final String UNICODE_FORMAT = "UTF-8";
 
-    public static SecretKey generateKey(String encryptionType) throws NoSuchAlgorithmException // encryptionType is AES
     public static SecretKey generateKey (String encryptionType) throws Exception // encryptionType is AES
     {
         // Generate AES key
