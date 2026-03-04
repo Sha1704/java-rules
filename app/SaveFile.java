@@ -3,7 +3,9 @@ package app;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
+
 import javax.crypto.SecretKey;
+
 import java.security.*;
 
 /**
@@ -13,6 +15,10 @@ import java.security.*;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -292,11 +298,31 @@ class EncryptAndDecrypt
 {
     private static final String UNICODE_FORMAT = "UTF-8";
 
-    public static SecretKey generateKey (String encryptionType) throws NoSuchAlgorithmException // encryptionType is AES
+    public static SecretKey generateKey (String encryptionType) throws Exception // encryptionType is AES
     {
+        // Generate AES key
         KeyGenerator keyGenerator = KeyGenerator.getInstance(encryptionType);
         SecretKey myKey = keyGenerator.generateKey();
-        String query = "INSERT INTO account_balance (key) VALUES (?)"; // FIX HERE
+
+        // Convert keu to base 64 string for storage
+        String encodedKey = Base64.getEncoder().encodeToString(myKey.getEncoded());
+
+        // Database connection info
+        String DB_URL = "jdbc:oracle:thin:@10.110.10.90:1521:oracle";
+        String USER = "IT326S09";
+        String PASS = "pink22";
+
+        String query = "INSERT INTO account_balance ('key') VALUES (?)"; 
+        
+        Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+        PreparedStatement stmt = conn.prepareStatement(query);
+
+        stmt.setString(1, encodedKey);
+        stmt.executeUpdate();
+
+        stmt.close();
+        conn.close();
+
         return myKey;
     }
 
