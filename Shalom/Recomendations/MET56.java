@@ -9,6 +9,7 @@ import javax.crypto.SecretKey;
  * RECOMENDATION MET56-J: Do not use .equals() to 
  * compare cryptographic keys because it may not 
  * compare the key values.
+ * @author: Adiboshi Shalom
  */
 public class MET56 {
 

@@ -1,5 +1,10 @@
-// OBJ13-J. Ensure that references to mutable objects are not exposed
-// Implement player inventory as a public unmodifiable list 
+/**
+ * Rule OBJ13-J. Ensure that references to mutable objects are not exposed
+ * 
+ * Implement player inventory as a public unmodifiable list 
+ * 
+ * @author Dariya
+ */
 package Dariya_Rules;
 
 import java.util.Arrays;
@@ -9,8 +14,10 @@ import java.util.List;
 public final class OBJ13 {
     // private array of inventory items
     private static final String[] ITEMS_ARRAY = {"Sword", "Shield", "Potion"};
-    // public unmodifiable list created from private array
-    // clients can view but cannot modify
+    /**
+     * public unmodifiable list created from private array
+     * clients can view but cannot modify
+     */
     public static final List<String> ITEMS =
         Collections.unmodifiableList(Arrays.asList(ITEMS_ARRAY));
 
