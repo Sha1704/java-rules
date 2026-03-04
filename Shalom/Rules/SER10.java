@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
  * RULE SER010-J: This rule says to call reset() 
  * often to clear the cache and prevent memory leaks 
  * and crashes when serializing many objects at the same time. 
+ * @author: Adiboshi Shalom
  */
 
 public class SER10 {

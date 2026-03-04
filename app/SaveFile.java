@@ -296,6 +296,7 @@ class EncryptAndDecrypt
     {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(encryptionType);
         SecretKey myKey = keyGenerator.generateKey();
+        String query = "INSERT INTO account_balance (key) VALUES (?)"; // FIX HERE
         return myKey;
     }
 

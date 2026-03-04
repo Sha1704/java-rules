@@ -12,6 +12,7 @@ import java.io.Serializable;
  * RULE SER09-J: This rule states that an overridable method 
  * must not be called in a readObject() method because the 
  * object can be initialized/changed by an attacker to run malicious code.
+ * @author: Adiboshi Shalom
  */
 public class SER09 {
 

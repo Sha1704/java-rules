@@ -5,6 +5,7 @@ package Shalom.Rules;
  * like an array or a date,  make sure to make a copy of the data 
  * before deserializing it so an attacker can't change the state of 
  * the data to do whatever they want.
+ * @author: Adiboshi Shalom
  */
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
