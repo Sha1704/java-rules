@@ -48,13 +48,13 @@ public class Dealer{
             Card newCard = deck.drawCard();
             if(newCard != null){
                 addCard(newCard);
-                Logger.getLogger(Dealer.class.getName()).info("Dealer hits and gets: " + newCard);
+                Logger.getLogger(Dealer.class.getName()).info(() -> "Dealer hits and gets: " + newCard);
             } else {
                 Logger.getLogger(Dealer.class.getName()).warning("Deck is empty, cannot deal more cards.");
                 break;
             }
         }
-        Logger.getLogger(Dealer.class.getName()).info("Dealer stands with hand value: " + getHandValue());
+        Logger.getLogger(Dealer.class.getName()).info(() -> "Dealer stands with hand value: " + getHandValue());
     }
 
 

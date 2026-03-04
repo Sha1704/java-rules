@@ -1,9 +1,9 @@
 package app;
-import java.util.Date;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import java.nio.ByteBuffer;
 
 /**
  * Represents a VIP blackjack acc, inheriting from regular acc
@@ -79,24 +79,24 @@ final class VIP extends Regular {
      * use the selected perk if one has been chosen (OBJ01)
      */
     public void usePerk(){
-        if(selectedPerk.equals("Bonus")){
-            if(bonusUsed){
-                System.out.println("Bonus perk already used.");
-                return;
+        switch (selectedPerk) {
+            case "Bonus" -> {
+                if(bonusUsed){
+                    System.out.println("Bonus perk already used.");
+                    return;
+                }   extraBalance();
+                selectedPerk = "";
+                bonusUsed = true;
             }
-            extraBalance();
-            selectedPerk = "";
-            bonusUsed = true;
-        } else if(selectedPerk.equals("LoungeAccess")){
-            if(loungeAccessUsed){
-                System.out.println("Lounge access perk already used.");
-                return;
+            case "LoungeAccess" -> {
+                if(loungeAccessUsed){
+                    System.out.println("Lounge access perk already used.");
+                    return;
+                }   accessLounge();
+                selectedPerk = "";
+                loungeAccessUsed = true;
             }
-            accessLounge();
-            selectedPerk = "";
-            loungeAccessUsed = true;
-        } else {
-            System.out.println("No perk selected yet.");
+            default -> System.out.println("No perk selected yet.");
         }
         vipBoostActive = ! (bonusUsed && loungeAccessUsed);
     }
