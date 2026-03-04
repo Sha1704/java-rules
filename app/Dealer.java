@@ -33,7 +33,7 @@ public class Dealer{
 
     //get all card in hand - list
     public List<Card> getHandCards(){
-        return List.copyOf(hand.getCards());
+        return hand.getCards();
     }
 
     //reset hand for new round
@@ -43,23 +43,20 @@ public class Dealer{
 
     //Dealer hits until hand value is 17 or more
     public void playTurn(Deck deck){
-        Objects.requireNonNull(deck, "deck must not be null");
-        while(getHandValue() < 17){
+        while(getHandValue() < 21){
             Card newCard = deck.drawCard();
             if(newCard != null){
                 addCard(newCard);
-                Logger.getLogger(Dealer.class.getName()).info(() -> "Dealer hits and gets: " + newCard);
+                Logger.getLogger(Dealer.class.getName()).info("Dealer hits and gets: " + newCard);
             } else {
                 Logger.getLogger(Dealer.class.getName()).warning("Deck is empty, cannot deal more cards.");
                 break;
             }
         }
-        Logger.getLogger(Dealer.class.getName()).info(() -> "Dealer stands with hand value: " + getHandValue());
+        Logger.getLogger(Dealer.class.getName()).info("Dealer finishes with hand value: " + getHandValue());
     }
 
 
 
 
 }
-
-

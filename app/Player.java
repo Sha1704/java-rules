@@ -17,10 +17,10 @@ public class Player implements Serializable{
     //Declaring variables
     private static final Logger LOGGER = Logger.getLogger(Player.class.getName());
     private static final long serialVersionUID = 1L; //SER01-J: Explicit serialVersionUID for Serializable class
-    private transient final String playerId; //SER03-J: Sensitive field not serialized
+    private transient final int playerId; //SER03-J: Sensitive field not serialized
     private final String name;
     //VNA00-J: volatile variable for visibility across threads
-    private volatile int chipBalance;
+    private volatile double chipBalance; //changed to double
     private final List<Hand> hands;
     private boolean isActive;
 
@@ -31,9 +31,9 @@ public class Player implements Serializable{
      * @param initialChips - starting chip count
      * @throws IllegalArgumentException if parameters are invalid (ERRo7-J: specific exception)
      */
-    public Player(String playerId, String name, int initialChips) {
-        if(playerId == null || playerId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Player ID cannot be null or empty.");
+    public Player(int playerId, String name, double initialChips) {
+        if(playerId <= 0) {
+            throw new IllegalArgumentException("Player ID must be a positive integer.");
         }
         if(name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Player name cannot be null or empty.");
@@ -55,13 +55,13 @@ public class Player implements Serializable{
      * @param amount - amount of chips to bet
      * @return true if bet is placed successfully, false otherwise
      */
-    public boolean placeBet(int amount) {
+    public boolean placeBet(double amount) {
         //ERR08-J: Prevent NullPointerExceptions by checking parameters before use
        if(amount <= 0) {
             logError("Invalid bet amount: " + amount, null);
             return false;
         }
-        int currentBalance = chipBalance; // Read volatile variable once for consistency
+        double currentBalance = chipBalance; // Read volatile variable once for consistency
         if(currentBalance < amount) {
             logError("Insufficient chips for bet."  , null);
             return false;
@@ -94,7 +94,7 @@ public class Player implements Serializable{
      * Add winings to player's chip balance.
      * @param amount - amount of chips won
      */
-    public void addWinnings(int amount) {
+    public void addWinnings(double amount) {
         if(amount < 0) {
             logError("Negative winnings amount: "+amount, null);
             return;
@@ -109,12 +109,27 @@ public class Player implements Serializable{
             logError("Error adding winnings for player.", e);
         }
     }
+    public void addMoney(double amount) {
+        if(amount < 0) {
+            logError("Negative amount to add: "+amount, null);
+            return;
+        }
+
+        try {
+            chipBalance += amount; // Atomic operation to update chip balance
+            logInfo("Player " + name + " added " + amount + " to balance.");
+        } catch (Exception e) {
+            //ERR01-J:Don't expose sensitive information in error messages,
+            //log the exception securely (ERR02-J)
+            logError("Error adding money for player.", e);
+        }
+    }
 
     /**
      * Get the current chip balance of the player.
      * @return - current chip balance
      */
-    public int getChipBalance() {
+    public double getChipBalance() {
         return chipBalance;
     }
 
@@ -165,7 +180,7 @@ public class Player implements Serializable{
     }
 
     //Getters and setters
-    public String getPlayerId() {
+    public int getPlayerId() {
         return playerId;
     }
 

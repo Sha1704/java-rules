@@ -10,8 +10,9 @@ class Regular {
     // private fields to ensure data safety (OBJ01, OBJ05)
     private final Date lastLogin;
     private String playerName;
+
     private int gamesPlayed;
-    private int balance;
+    private double balance;
 
     /**
      * public constructor for new player acc
@@ -20,7 +21,7 @@ class Regular {
      * @param playerName player name and cannot be null or blank
      * @param initialBalance starting balance and must be >=0
      */
-    public Regular(String playerName, int initialBalance){
+    public Regular(String playerName, double initialBalance){
         if(playerName == null || playerName.isBlank()){
             throw new IllegalArgumentException("Player name cannot be blank");
         }
@@ -81,7 +82,7 @@ class Regular {
      * 
      * @return current balance
      */
-    public int getBalance(){
+    public double getBalance(){
         return balance;
     }
     /**
