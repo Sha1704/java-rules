@@ -44,7 +44,7 @@ final class VIP extends Regular {
         buffer.flip();
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
-        System.out.println("\nEvent: " + new String(bytes));
+        System.out.println("\nVIP promotion event occurred");
     }
 
     /**
