@@ -1,22 +1,40 @@
-// OBJ51-J. Minimize the accessibility of classes and their members
-// implement player stats with minimal accessibility
+/**
+ * Rule OBJ51-J. Minimize the accessibility of classes and their members.
+ * 
+ * Implement player stats with minimal accessibility.
+ *
+ * @author Dariya
+ */
 package Dariya_Rec;
 
 final class stats{
     private int score;
     private int lives;
 
-    // package-private constructor
+    /**
+     * package-private constructor
+     * Creates a stats obj with a specified num of lives
+     * 
+     * @param initialLives starting number of lives
+     */
     stats(int initialLives){
         this.score = 0;
         this.lives = initialLives;
     }
-    // package-private method to add points
+
+    /**
+     * Adds points to the player's score
+     * 
+     * @param points number of points to add
+     */
     void addScore(int points){
         score += points;
         System.out.println("Gained " + points + " points. Total score: " + score);
     }
-    // package-private method to lose a life
+
+    /**
+     * Removes one life from the player
+     */
     void loseLife(){
         if (lives > 0){
             lives--;
@@ -27,10 +45,20 @@ final class stats{
             System.out.println("GAME OVER");
         }
     }
-    // package-private getters
+    /**
+     * Returns the current score
+     * 
+     * @return current score
+     */
     int getScore(){
         return score;
     }
+
+    /**
+     * Returns remain lives
+     * 
+     * @return remaining lives
+     */
     int getLives(){
         return lives;
     }

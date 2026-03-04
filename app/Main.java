@@ -446,7 +446,7 @@ public class Main {
                 System.out.println();
                 System.out.println("Hello " + name + ", what would you like to do?");
 
-                printOptions();
+                printOptions(regularPlayer);
                 choice = scanner.nextLine().trim();
 
                 switch (choice) {
@@ -529,5 +529,7 @@ public class Main {
                 }
             }
         }
+        
+        
     }
 }

@@ -1,9 +1,6 @@
 package app;
 
-// SER11-J: If Externalizable is ever used, add a guard in readExternal()
-// to prevent multiple initialization (e.g., boolean initialized flag).
-// For Serializable, readObject is called only once automatically, so no guard needed.
-// ^^ Ask me if that makes no sense its a note for me later when this is in -Carlos 2/25
+import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,11 +11,13 @@ import java.util.logging.Logger;
   * betting capabilities.
   * @author Maria Plascencia  
   */
-public class Player {
+// SER11-J: Externable is never used
+public class Player implements Serializable{
 
     //Declaring variables
     private static final Logger LOGGER = Logger.getLogger(Player.class.getName());
-    private final int playerId;
+    private static final long serialVersionUID = 1L; //SER01-J: Explicit serialVersionUID for Serializable class
+    private transient final String playerId; //SER03-J: Sensitive field not serialized
     private final String name;
     //VNA00-J: volatile variable for visibility across threads
     private volatile double chipBalance; //changed to double

@@ -1,6 +1,7 @@
 /**
  * RECOMENDATION MET53-J: When you clone an object, 
  * the new object should be of the same type as the original object.
+ * @author: Adiboshi Shalom
  */
 package Shalom.Recomendations;
 

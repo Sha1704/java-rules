@@ -1,18 +1,32 @@
-// OBJ01-J. Limit accessibility of fields
-// Implement player score tracking with controlled access
+/**
+ * Rule OBJ01-J. Limit accessibility of fields
+ * 
+ * Implement player score tracking with controlled access
+ * 
+ * @author Dariya
+ */
 package Dariya_Rules;
 
 public class OBJ01 {
     // private field to store player score
     private int score = 0;
 
-    // method to safely read the score
+    /**
+     * method to safely read the score
+     * Returns current player score
+     * 
+     * @return current score
+     */
     public int getScore() {
         return score;
     }
 
-    // method to add points to the score safely
-    // ensure class invariants are maintained
+    /**
+     * Add points to the player score safely
+     * ensure class invariants are maintained
+     * 
+     * @param points number of points to add
+     */
     public void addPoints(int points) {
         score += points;
     }

@@ -14,6 +14,7 @@ import java.io.Serializable;
  * with full permission, restrict the permission 
  * of the data before converting into an object to 
  * prevent attackers from messing with the system.
+ * @author: Adiboshi Shalom
  */
 public class SER08 {
 
