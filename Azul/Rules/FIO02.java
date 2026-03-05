@@ -1,8 +1,5 @@
 package Azul.Rules;
 
-//Rule 13 FIO02-J
-//detect and handle file-related errors
-
 import java.io.File;
 
 /**
