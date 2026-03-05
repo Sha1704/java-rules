@@ -100,7 +100,7 @@ public class FileManager {
      * @param password the plaintext password to hash
      * @param filename the path of the file where the hash will be stored
      */
-    public void storePasswordHash_FIO52(String password, String filename) {
+    public void storePasswordHash(String password, String filename) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hash = md.digest(password.getBytes());

@@ -8,6 +8,9 @@ import java.sql.SQLException;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.Scanner;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
 
 /**
  * Main class that runs the Blackjack application.
@@ -21,6 +24,14 @@ public class Main {
      * Prints the available options during the Blackjack game.
      * Allows the player to either hit or stay.
      */
+
+    // SHALOM
+    // Add cryptographic key fields for save/load
+    // In production, load/generate keys securely and persist them
+    private static javax.crypto.SecretKey encryptionKey;
+    private static java.security.PrivateKey signatureKey;
+    private static java.security.PublicKey verificationKey;
+    private static SaveFile saveFile = new SaveFile();
     public static void printGameOptions() {
         System.out.println("Choose a play option:");
         System.out.println("1. Hit");
@@ -38,12 +49,47 @@ public class Main {
         System.out.println("1. Play");
         System.out.println("2. Add money");
         System.out.println("3. View balance");
-        
         System.out.println("4. Exit");
-        if(regularPlayer.)
+        // SHALOM
+        System.out.println("5. Save player profile");
+        System.out.println("6. Load player profile");
+        
+   
+        if(regularPlayer.isEligibleForVIP()){
+            System.out.println("7. VIP Promotion");
+        }
         System.out.print("Enter your choice: ");
        
     }
+
+    public static void printVIPOptions() {
+        System.out.println("Choose a regular account option:");
+        System.out.println("1. Select Perk");
+        System.out.println("2. View runtime.exec command");
+        System.out.print("Enter your choice: ");
+    }
+        private static String[] buildCommand(int choice, boolean isWindows) {
+        if (isWindows) {
+            // Windows uses cmd.exe built‑ins
+            return switch (choice) {
+                case 1 -> new String[] {"cmd.exe", "/C", "dir"};
+                case 2 -> new String[] {"cmd.exe", "/C", "dir /A"};
+                case 3 -> new String[] {"cmd.exe", "/C", "dir /Q"};
+                default -> null;
+            };
+        } else {
+            
+            return switch (choice) {
+                case 1 -> new String[] {"ls"};
+                case 2 -> new String[] {"ls", "-a"};
+                case 3 -> new String[] {"ls", "-l"};
+                default -> null;
+            };
+        }
+    }
+    
+
+
 
     /**
      * Retrieves the account balance for a specific user from the database.
@@ -57,7 +103,9 @@ public class Main {
 
         String sql = "SELECT balance FROM account_balance WHERE id = ?";
         id = validateId(id);
-
+        if(id <= 0) {
+            throw new IllegalArgumentException("Invalid ID.");
+        }
         try (PreparedStatement state = conn.prepareStatement(sql)) {
 
             state.setInt(1, id);
@@ -183,58 +231,52 @@ public class Main {
      *
      * @param scanner - scanner used for user input
      * @param gamePlayer - the player participating in the game
+     * @param regularPlayer - the regular player instance
+     * @param conn - database connection
      */
-    public static void playGame(Scanner scanner, Player gamePlayer, Connection conn) throws SQLException {
+    public static void playGame(Scanner scanner, Player gamePlayer, Regular regularPlayer, Connection conn) throws SQLException {
 
         boolean keepPlaying = true;
 
-        Dealer house = new Dealer();
-        Deck deck = new Deck();
+        Dealer house = new Dealer(new Deck());
+    
         int gamesPlayed = 0;
 
         while (keepPlaying) {
 
             String playChoice = "";
+            if(regularPlayer.isEligibleForVIP()){
+                System.out.println("As a VIP member, you receive a perk go to regular options to select one!");
+                
+            }
 
             System.out.print("Place your bet to start play: ");
             double betAmount = scanner.nextDouble();
+            scanner.nextLine();
 
             if (betAmount > 0) {
 
                 boolean playerWon = true;
-                scanner.nextLine();
+                
 
                 // Deduct bet from player's balance
-                gamePlayer.placeBet(betAmount);
-                boolean betUpdated = updateBalanceInDB(conn, gamePlayer.getPlayerId(), gamePlayer.getChipBalance());
+                boolean goodBet = gamePlayer.placeBet(betAmount);
+                if(goodBet) {
+                    
+               
+                regularPlayer.playGame(betAmount);
+                boolean betUpdated = updateBalanceInDB(conn, gamePlayer.getPlayerId(), gamePlayer.getChipBalance()-betAmount);
                 if(!betUpdated) {
                     System.out.println("Failed to update balance in database.");
                 }
 
 
-                Hand currentHand = new Hand();
-                gamePlayer.getHands().add(currentHand);
-
-                System.out.println("Dealing initial cards...");
-
-                // Shuffle deck if there are not enough cards remaining
-                if (deck.cardsRemaining() < 4) {
-                    System.out.println("Not enough cards remaining, reshuffling deck...");
-                    deck.shuffle();
-                }
-
-                // Deal initial cards
-                currentHand.addCard(deck.drawCard());
-                currentHand.addCard(deck.drawCard());
-
-                house.addCard(deck.drawCard());
-                house.addCard(deck.drawCard());
-
-                System.out.println("Dealer's visible card: " + house.showOneCard());
-
+                house.addPlayer(gamePlayer);
+                gamePlayer.setActive(true);
+                
+                house.startNewRound();
                 boolean playerTurn = true;
-
-                // Player's turn
+                Hand currentHand = gamePlayer.getHand();
                 while (playerTurn && currentHand.getValue() <= 21) {
 
                     System.out.println("Player's hand:");
@@ -253,64 +295,23 @@ public class Main {
 
                         case "1":
                             System.out.println("Player chose to HIT.");
-                            Card newCard = deck.drawCard();
-                            currentHand.addCard(newCard);
+                            gamePlayer.hit();
                             break;
 
                         case "2":
                             System.out.println("Player chose to STAY.");
+                            gamePlayer.stand();
                             playerTurn = false;
                             break;
 
                         default:
                             System.out.println("INVALID CHOICE.");
                     }
+                    house.processPlayerTurns();
                 }
-
-                System.out.println();
-
-                // Dealer plays if player hasn't busted
-                if (currentHand.getValue() <= 21) {
-
-                    for (int i = 0; i < house.getHandCards().size(); i++) {
-                        System.out.println("Dealer's card " + (i + 1) + ": "
-                                + house.getHandCards().get(i));
-                    }
-
-                    System.out.print("Dealer's hand value is " + house.getHandValue());
-
-                    boolean busted = false;
-
-                    while (house.getHandValue() < 21 &&
-                            currentHand.getValue() >= house.getHandValue() &&
-                            !busted &&
-                            (house.getHandValue() < 17 &&
-                                    currentHand.getValue() != house.getHandValue())) {
-
-                        System.out.println(", dealer hits.");
-                        System.out.println();
-
-                        house.playTurn(deck);
-
-                        if (house.getHandValue() > 21) {
-                            busted = true;
-                            System.out.println("Dealer busted! Player wins.");
-                        } else {
-                            System.out.print("Dealer's hand value is "
-                                    + house.getHandValue());
-                        }
-                    }
-
-                    if (!busted) {
-                        System.out.println(", dealer stands.");
-                    }
-
-                } else {
-
-                    System.out.println("Player busted! Dealer wins.");
-                    playerWon = false;
-                }
-
+                house.playTurn();
+                house.settleBets();
+                
                 // Display final hand values
                 System.out.println("Dealer's hand value is "
                         + house.getHandValue()
@@ -320,25 +321,45 @@ public class Main {
                 // Determine winner
                 if (house.getHandValue() > currentHand.getValue()
                         && house.getHandValue() <= 21) {
-
-                    System.out.println("Dealer wins with a higher hand value.");
+                   
                     playerWon = false;
 
-                } else if (house.getHandValue() == currentHand.getValue()
+                } 
+                else if (currentHand.getValue() > 21) {
+                    playerWon = false;
+                    if(house.getHandValue() > 21) {
+                        System.out.println("Both player and dealer busted! It's a tie.");
+                        playerWon = false; // Treat as loss for player since they also busted
+                        gamePlayer.addWinnings(betAmount);
+                    }
+                    else{
+                        System.out.println("Player busted! Dealer wins.");
+                        playerWon = false;
+                    }
+
+                    
+                    
+
+                }
+                else if (house.getHandValue() == currentHand.getValue()
                         && !(house.getHandValue() > 21)) {
 
-                    System.out.println("It's a tie! Dealer wins ties.");
+                    
                     gamePlayer.addWinnings(betAmount);
-                    updateBalanceInDB(conn, gamesPlayed, gamesPlayed);
+                    updateBalanceInDB(conn, gamePlayer.getPlayerId(), gamePlayer.getChipBalance());
                     if(!betUpdated) {
                         System.out.println("Failed to update balance in database.");
                     }
                     playerWon = false;
                 }
+              
 
                 house.resetHand();
+                house.removePlayer(gamePlayer.getPlayerId());
+                gamePlayer.resetForNewRound();
 
                 gamesPlayed++;
+                
 
                 System.out.println();
 
@@ -350,7 +371,9 @@ public class Main {
                     if(!winningsUpdated) {
                         System.out.println("Failed to update balance in database.");
                     }
-                } else {
+                } 
+                else 
+                {
                     System.out.println("Sorry, you lost this round.");
                 }
 
@@ -366,20 +389,24 @@ public class Main {
                 } else if (again.equals("1")) {
 
                     System.out.println("Starting a new game...");
+                    gamePlayer.resetForNewRound();
 
                 } else {
 
                     System.out.println("INVALID CHOICE. Returning to menu.");
                     keepPlaying = false;
                 }
+            
 
-            } else {
+            }} else {
 
                 System.out.println(
                         "Insufficient balance to place bet. Please add more money to your account.");
                 keepPlaying = false;
             }
+            
         }
+
     }
 
     /**
@@ -405,6 +432,20 @@ public class Main {
         String name = "";
         int id = -1;
 
+        // SHALOM
+        try {
+            // Generate AES key for encryption
+            SecretKey mKey = EncryptAndDecrypt.generateKey("AES");
+
+            // Generate RSA key pair for signing/verification
+            java.security.KeyPairGenerator kpg = java.security.KeyPairGenerator.getInstance("RSA");
+            kpg.initialize(2048);
+            java.security.KeyPair kp = kpg.generateKeyPair();
+            signatureKey = kp.getPrivate();
+            verificationKey = kp.getPublic();
+        } catch (Exception e) {
+            System.err.println("Key generation error: " + e.getMessage());
+        }
         try {
 
             // Establish database connection
@@ -413,10 +454,10 @@ public class Main {
             // Authenticate user
             while (!validAccount) {
 
-                System.out.println("Please enter your name:");
+                System.out.print("Please enter your name:");
                 name = scanner.nextLine();
 
-                System.out.println("Please enter your id:");
+                System.out.print("Please enter your id:");
                 id = scanner.nextInt();
                 scanner.nextLine();
 
@@ -452,7 +493,7 @@ public class Main {
                     case "1":
 
                         System.out.println("chose to PLAY.");
-                        playGame(scanner, gamePlayer,conn);
+                        playGame(scanner, gamePlayer, regularPlayer, conn);
 
                         break;
 
@@ -465,6 +506,9 @@ public class Main {
 
                         boolean changedAmount =
                                 updateBalanceInDB(conn, id, currBalance);
+                        regularPlayer.addBalance( amountToAdd);
+                        gamePlayer.addMoney(amountToAdd);
+                        
 
                         if (changedAmount) {
 
@@ -493,13 +537,82 @@ public class Main {
 
                         System.out.println("chose to EXIT.");
                         break;
+// SHALOM
+                    case "5":
+                    System.out.println("chose to SAVE PLAYER PROFILE.");
+                    boolean saved = saveFile.savePlayer(gamePlayer, encryptionKey, signatureKey);
+                    if (saved) {
+                        System.out.println("Player profile saved.");
+                    } else {
+                        System.out.println("Failed to save player profile.");
+                    }
+                    break;
+                case "6":
+                    System.out.println("chose to LOAD PLAYER PROFILE.");
+                    Player loadedPlayer = saveFile.loadPlayer(encryptionKey, verificationKey);
+                    if (loadedPlayer != null) {
+                        gamePlayer = loadedPlayer;
+                        System.out.println("Player profile loaded.");
+                    } else {
+                        System.out.println("Failed to load player profile.");
+                    }
+                    break;// END SHALOM
+                    case "7":
+                        if(regularPlayer.isEligibleForVIP()){
+                            Date lastLogin = new Date();
+                            regularPlayer= new VIP(regularPlayer.getPlayerName(), regularPlayer.getBalance(), regularPlayer.getGamesPlayed(),lastLogin); 
+                            VIP vipPlayer = new VIP(regularPlayer.getPlayerName(), regularPlayer.getBalance(), regularPlayer.getGamesPlayed(),lastLogin); 
+                            System.out.println("Congratulations! You are eligible for our VIP promotion!");
+                            printVIPOptions();
+                            String vipChoice = scanner.nextLine();
+                            
 
-                    default:
+                            if(vipChoice.equals("1")){
+                                System.out.print("Select a perk from the available options: " + vipPlayer.getAvailablePerks() + ": ");
+                                String perkChoice = scanner.nextLine();
+                                vipPlayer.selectPerk(perkChoice);
+                            }else if(vipChoice.equals("2")){
+                                String os = System.getProperty("os.name").toLowerCase();
+                                boolean isWindows = os.contains("win");
 
-                        System.out.println("INVALID CHOICE.");
+                                //for rule IDS07
+                                System.out.println("Choose a directory listing option:");
+                                System.out.println("1. Basic listing");
+                                System.out.println("2. Show hidden files");
+                                System.out.println("3. Detailed listing");
+                                System.out.print("Enter your choice: ");
+
+                                int choiceCommand = scanner.nextInt();
+
+                                // Build a trusted command based on OS
+                                String[] command = buildCommand(choiceCommand, isWindows);
+
+
+                                // Execute the trusted command safely
+                                Process process = Runtime.getRuntime().exec(command);
+                                int exitCode = process.waitFor();
+
+                                if (exitCode != 0) {
+                                    System.out.println("Command failed with exit code " + exitCode);
+                                } else {
+                                    process.getInputStream().transferTo(System.out);
+                                }
+                            }
+                            else {
+                                System.out.println("INVALID CHOICE.");
+                            }
+                        } else {
+                            System.out.println("Sorry, you are not eligible for the VIP promotion yet. Keep playing to unlock it!");
+                        }
+                        break;                
+// END SHALOM
+                default:
+
+                    System.out.println("INVALID CHOICE.");
                 }
 
                 System.out.println();
+                
             }
 
             scanner.close();

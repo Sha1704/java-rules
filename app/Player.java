@@ -20,7 +20,7 @@ public class Player implements Serializable{
     private transient final int playerId; //SER03-J: Sensitive field not serialized
     private final String name;
     //VNA00-J: volatile variable for visibility across threads
-    private volatile int chipBalance;
+    private volatile double chipBalance;
     private Hand hand; // Changed from List<Hand> to single Hand (removed splitting)
     private boolean isActive;
     
@@ -274,7 +274,6 @@ public class Player implements Serializable{
     public int getPlayerId() {
         return playerId;
     }
-
     public String getName() {
         return name;
     }

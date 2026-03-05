@@ -1,9 +1,5 @@
 package Azul.Rules;
 
-//Rule 13 RIO05-J
-//do not expose buffers or thier backing arrays methods to untrusted code
-//copy code or create a read-only view
-
 import java.nio.CharBuffer;
 
 /**
