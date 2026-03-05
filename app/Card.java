@@ -40,6 +40,7 @@ public class Card {
 
     /**
      * Constructs a new Card with the given rank and suit.
+     * MET50-J: Single clear constructor avoids ambiguous overload
      * @param rank the rank of the card
      * @param suit the suit of the card 
      * @throws IllegalArgumentException if either rank or suit is null

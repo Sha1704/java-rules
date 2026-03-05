@@ -56,6 +56,9 @@ public class Main {
         // SHALOM
         System.out.println("5. Save player profile");
         System.out.println("6. Load player profile");
+        
+        System.out.println("4. Exit");
+        if(regularPlayer.)
         System.out.print("Enter your choice: ");
        
     }
