@@ -177,9 +177,9 @@ public class Dealer {
      * Get all cards in the dealer's hand
      * @return list of cards in dealer's hand
      */
-    public List<Card> getHandCards() {
-        // MET52-J: Return a defensive copy (moved from Player)
-        return List.copyOf(hand.getCards());
+    public List<Card> getHandCards(){
+      // MET52-J: Return a defensive copy (moved from Player)
+        return hand.getCards();
     }
 
     /**
