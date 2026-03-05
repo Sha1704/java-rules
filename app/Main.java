@@ -55,7 +55,6 @@ public class Main {
         System.out.println("5. Save player profile");
         System.out.println("6. Load player profile");
         
-        System.out.println("4. Exit");
         if(regularPlayer.isEligibleForVIP()){
             System.out.println("7. VIP Promotion");
         }
