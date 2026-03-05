@@ -7,8 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
-import java.util.Scanner;
 import java.util.Date;
+import java.util.Scanner;
 
 import javax.crypto.SecretKey;
 
@@ -435,7 +435,7 @@ public class Main {
         // SHALOM
         try {
             // Generate AES key for encryption
-            SecretKey mKey = EncryptAndDecrypt.generateKey("AES");
+            encryptionKey = EncryptAndDecrypt.generateKey("AES");
 
             // Generate RSA key pair for signing/verification
             java.security.KeyPairGenerator kpg = java.security.KeyPairGenerator.getInstance("RSA");
@@ -499,113 +499,120 @@ public class Main {
 
                     case "2":
 
-                        System.out.println("chose to ADD MONEY.");
+                    System.out.println("chose to ADD MONEY.");
 
-                        System.out.print("Enter amount to add: ");
-                        double amountToAdd = scanner.nextDouble();
+                    System.out.print("Enter amount to add: ");
+                    double amountToAdd = scanner.nextDouble();
 
-                        boolean changedAmount =
-                                updateBalanceInDB(conn, id, currBalance);
-                        regularPlayer.addBalance( amountToAdd);
-                        gamePlayer.addMoney(amountToAdd);
-                        
+                    boolean changedAmount =
+                            updateBalanceInDB(conn, id, currBalance);
+                    regularPlayer.addBalance( amountToAdd);
+                    gamePlayer.addMoney(amountToAdd);
+                    
 
-                        if (changedAmount) {
+                    if (changedAmount) {
 
-                            System.out.println("Balance updated successfully."
-                                    + " New balance: $"
-                                    + getBalanceFromDB(conn, id));
+                        System.out.println("Balance updated successfully."
+                                + " New balance: $"
+                                + getBalanceFromDB(conn, id));
 
-                        } else {
-
-                            System.out.println("Failed to update balance.");
-                        }
-
-                        gamePlayer.addMoney(amountToAdd);
-
-                        scanner.nextLine();
-                        break;
-
-                    case "3":
-
-                        System.out.println("chose to VIEW BALANCE.");
-                        System.out.println("Your current balance is: $"
-                                + gamePlayer.getChipBalance());
-                        break;
-
-                    case "4":
-
-                        System.out.println("chose to EXIT.");
-                        break;
-// SHALOM
-                    case "5":
-                    System.out.println("chose to SAVE PLAYER PROFILE.");
-                    boolean saved = saveFile.savePlayer(gamePlayer, encryptionKey, signatureKey);
-                    if (saved) {
-                        System.out.println("Player profile saved.");
                     } else {
-                        System.out.println("Failed to save player profile.");
+
+                        System.out.println("Failed to update balance.");
+                    }
+
+                    gamePlayer.addMoney(amountToAdd);
+
+                    scanner.nextLine();
+                    break;
+
+                case "3":
+
+                    System.out.println("chose to VIEW BALANCE.");
+                    System.out.println("Your current balance is: $"
+                            + gamePlayer.getChipBalance());
+                    break;
+
+                case "4":
+
+                    System.out.println("chose to EXIT.");
+                    break;
+// SHALOM
+                case "5":
+                    System.out.println("chose to SAVE PLAYER PROFILE.");
+                    if (encryptionKey == null || signatureKey == null) {
+                        System.err.println("Encryption or signature key not initialized.");
+                    } else {
+                        boolean saved = saveFile.savePlayer(gamePlayer, encryptionKey, signatureKey);
+                        if (saved) {
+                            System.out.println("Player profile saved.");
+                        } else {
+                            System.out.println("Failed to save player profile.");
+                        }
                     }
                     break;
                 case "6":
                     System.out.println("chose to LOAD PLAYER PROFILE.");
-                    Player loadedPlayer = saveFile.loadPlayer(encryptionKey, verificationKey);
-                    if (loadedPlayer != null) {
-                        gamePlayer = loadedPlayer;
-                        System.out.println("Player profile loaded.");
+                    if (encryptionKey == null || verificationKey == null) {
+                        System.err.println("Encryption or verification key not initialized.");
                     } else {
-                        System.out.println("Failed to load player profile.");
+                        Player loadedPlayer = saveFile.loadPlayer(encryptionKey, verificationKey);
+                        if (loadedPlayer != null) {
+                            gamePlayer = loadedPlayer;
+                            System.out.println("Player profile loaded.");
+                        } else {
+                            System.out.println("Failed to load player profile.");
+                        }
                     }
                     break;// END SHALOM
-                    case "7":
-                        if(regularPlayer.isEligibleForVIP()){
-                            Date lastLogin = new Date();
-                            regularPlayer= new VIP(regularPlayer.getPlayerName(), regularPlayer.getBalance(), regularPlayer.getGamesPlayed(),lastLogin); 
-                            VIP vipPlayer = new VIP(regularPlayer.getPlayerName(), regularPlayer.getBalance(), regularPlayer.getGamesPlayed(),lastLogin); 
-                            System.out.println("Congratulations! You are eligible for our VIP promotion!");
-                            printVIPOptions();
-                            String vipChoice = scanner.nextLine();
-                            
+                case "7":
+                    if(regularPlayer.isEligibleForVIP()){
+                        Date lastLogin = new Date();
+                        regularPlayer= new VIP(regularPlayer.getPlayerName(), regularPlayer.getBalance(), regularPlayer.getGamesPlayed(),lastLogin); 
+                        VIP vipPlayer = new VIP(regularPlayer.getPlayerName(), regularPlayer.getBalance(), regularPlayer.getGamesPlayed(),lastLogin); 
+                        System.out.println("Congratulations! You are eligible for our VIP promotion!");
+                        printVIPOptions();
+                        String vipChoice = scanner.nextLine();
+                        
 
-                            if(vipChoice.equals("1")){
-                                System.out.print("Select a perk from the available options: " + vipPlayer.getAvailablePerks() + ": ");
-                                String perkChoice = scanner.nextLine();
-                                vipPlayer.selectPerk(perkChoice);
-                            }else if(vipChoice.equals("2")){
-                                String os = System.getProperty("os.name").toLowerCase();
-                                boolean isWindows = os.contains("win");
+                        if(vipChoice.equals("1")){
+                            System.out.print("Select a perk from the available options: " + vipPlayer.getAvailablePerks() + ": ");
+                            String perkChoice = scanner.nextLine();
+                            vipPlayer.selectPerk(perkChoice);
+                        }else if(vipChoice.equals("2")){
+                            String os = System.getProperty("os.name").toLowerCase();
+                            boolean isWindows = os.contains("win");
 
-                                //for rule IDS07
-                                System.out.println("Choose a directory listing option:");
-                                System.out.println("1. Basic listing");
-                                System.out.println("2. Show hidden files");
-                                System.out.println("3. Detailed listing");
-                                System.out.print("Enter your choice: ");
+                            //for rule IDS07
+                            System.out.println("Choose a directory listing option:");
+                            System.out.println("1. Basic listing");
+                            System.out.println("2. Show hidden files");
+                            System.out.println("3. Detailed listing");
+                            System.out.print("Enter your choice: ");
 
-                                int choiceCommand = scanner.nextInt();
+                            int choiceCommand = scanner.nextInt();
 
-                                // Build a trusted command based on OS
-                                String[] command = buildCommand(choiceCommand, isWindows);
+                            // Build a trusted command based on OS
+                            String[] command = buildCommand(choiceCommand, isWindows);
 
 
-                                // Execute the trusted command safely
-                                Process process = Runtime.getRuntime().exec(command);
-                                int exitCode = process.waitFor();
+                            // Execute the trusted command safely
+                            Process process = Runtime.getRuntime().exec(command);
+                            int exitCode = process.waitFor();
 
-                                if (exitCode != 0) {
-                                    System.out.println("Command failed with exit code " + exitCode);
-                                } else {
-                                    process.getInputStream().transferTo(System.out);
-                                }
+                            if (exitCode != 0) {
+                                System.out.println("Command failed with exit code " + exitCode);
+                            } else {
+                                process.getInputStream().transferTo(System.out);
                             }
-                            else {
-                                System.out.println("INVALID CHOICE.");
-                            }
-                        } else {
-                            System.out.println("Sorry, you are not eligible for the VIP promotion yet. Keep playing to unlock it!");
                         }
-                        break;                
-// END SHALOM
+                        else {
+                            System.out.println("INVALID CHOICE.");
+                        }
+                    } else {
+                        System.out.println("Sorry, you are not eligible for the VIP promotion yet. Keep playing to unlock it!");
+                    }
+                    break;    
                 default:
 
                     System.out.println("INVALID CHOICE.");
