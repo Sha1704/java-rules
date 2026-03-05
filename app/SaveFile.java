@@ -35,16 +35,19 @@ public class SaveFile {
 
     // WHITELIST of allowed classes for SER12-J (prevents deserializing untrusted
     // classes)
-    private static final Set<String> SAFE_CLASSES = Set.of(
-            // Game classes
-            "app.Player",
-            "app.Regular",
-            "app.VIP",
-            // Safe Java collection classes
-            "java.lang.String",
-            "java.lang.Integer",
-            "java.util.ArrayList",
-            "java.util.List");
+            private static final Set<String> SAFE_CLASSES = Set.of(
+                // Game classes
+                "app.Player",
+                "app.Player$PlayerAction",
+                "app.Regular",
+                "app.VIP",
+                // Safe Java collection classes
+                "java.lang.String",
+                "java.lang.Integer",
+                "java.util.ArrayList",
+                "java.util.List",
+                // Safe for enums
+                "java.lang.Enum");
 
     /**
      * Custom ObjectInputStream that checks every class against a whitelist
