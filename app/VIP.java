@@ -31,7 +31,7 @@ final class VIP extends Regular {
      * @param gamesPlayed number of games played
      * @param lastLogin last login date
      */
-    public VIP(String playerName, int balance, int gamesPlayed, Date lastLogin){
+    public VIP(String playerName, double balance, int gamesPlayed, Date lastLogin){
         super(playerName, balance, gamesPlayed, lastLogin);
         if(!isEligibleForVIP()){
             throw new IllegalStateException("Account is not eligible for VIP promotion");

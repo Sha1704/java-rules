@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.Scanner;
+import java.util.Date;
 
 import javax.crypto.SecretKey;
 
@@ -49,12 +50,11 @@ public class Main {
         System.out.println("2. Add money");
         System.out.println("3. View balance");
         System.out.println("4. Exit");
-
-        
         // SHALOM
         System.out.println("5. Save player profile");
         System.out.println("6. Load player profile");
         
+   
         if(regularPlayer.isEligibleForVIP()){
             System.out.println("7. VIP Promotion");
         }
@@ -64,9 +64,8 @@ public class Main {
 
     public static void printVIPOptions() {
         System.out.println("Choose a regular account option:");
-        System.out.println("1. Get Bonus Perk");
-        System.out.println("2. Access VIP Lounge");
-        System.out.println("3. View runtime.exec command");
+        System.out.println("1. Select Perk");
+        System.out.println("2. View runtime.exec command");
         System.out.print("Enter your choice: ");
     }
         private static String[] buildCommand(int choice, boolean isWindows) {
@@ -347,7 +346,7 @@ public class Main {
 
                     
                     gamePlayer.addWinnings(betAmount);
-                    updateBalanceInDB(conn, gamesPlayed, gamesPlayed);
+                    updateBalanceInDB(conn, gamePlayer.getPlayerId(), gamePlayer.getChipBalance());
                     if(!betUpdated) {
                         System.out.println("Failed to update balance in database.");
                     }
@@ -455,10 +454,10 @@ public class Main {
             // Authenticate user
             while (!validAccount) {
 
-                System.out.println("Please enter your name:");
+                System.out.print("Please enter your name:");
                 name = scanner.nextLine();
 
-                System.out.println("Please enter your id:");
+                System.out.print("Please enter your id:");
                 id = scanner.nextInt();
                 scanner.nextLine();
 
@@ -560,16 +559,19 @@ public class Main {
                     break;// END SHALOM
                     case "7":
                         if(regularPlayer.isEligibleForVIP()){
+                            Date lastLogin = new Date();
+                            regularPlayer= new VIP(regularPlayer.getPlayerName(), regularPlayer.getBalance(), regularPlayer.getGamesPlayed(),lastLogin); 
+                            VIP vipPlayer = new VIP(regularPlayer.getPlayerName(), regularPlayer.getBalance(), regularPlayer.getGamesPlayed(),lastLogin); 
                             System.out.println("Congratulations! You are eligible for our VIP promotion!");
                             printVIPOptions();
-                            String vipChoice = scanner.nextLine().trim();
-                            scanner.nextLine();
+                            String vipChoice = scanner.nextLine();
+                            
 
                             if(vipChoice.equals("1")){
-                                System.out.println("You are already a VIP member! Enjoy your perks!");
+                                System.out.print("Select a perk from the available options: " + vipPlayer.getAvailablePerks() + ": ");
+                                String perkChoice = scanner.nextLine();
+                                vipPlayer.selectPerk(perkChoice);
                             }else if(vipChoice.equals("2")){
-                                System.out.println("Accessing VIP Lounge! Enjoy your perks!"); 
-                            }else if(vipChoice.equals("3")){
                                 String os = System.getProperty("os.name").toLowerCase();
                                 boolean isWindows = os.contains("win");
 
@@ -585,11 +587,6 @@ public class Main {
                                 // Build a trusted command based on OS
                                 String[] command = buildCommand(choiceCommand, isWindows);
 
-                                if (command == null) {
-                                    System.out.println("Invalid choice");
-                                    scanner.close();
-                                    return;
-                                }
 
                                 // Execute the trusted command safely
                                 Process process = Runtime.getRuntime().exec(command);
