@@ -1,5 +1,6 @@
 package app;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -8,8 +9,8 @@ import java.util.logging.Logger;
  * game and a bet amount.
  * @author Maria Plascencia  
  */
-public class Hand {
-    //Declaring variables
+public class Hand implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(Hand.class.getName());
     private final List<Card> cards;
     private double bet;
@@ -34,7 +35,6 @@ public class Hand {
      */
     public void addCard(Card card) {
         if (card == null) {
-            //ERR08-J: Prevent NullPointerExceptions 
             return;
         }
         cards.add(card);
@@ -49,7 +49,7 @@ public class Hand {
         int aces = 0;
 
         for (Card card : cards) {
-            if(card == null) continue; //ERR08-J: Prevent NullPointerExceptions
+            if(card == null) continue;
 
             if(card.getRank() == Card.Rank.ACE) {
                 aces++;
@@ -57,7 +57,7 @@ public class Hand {
             value += card.getValue();
         }
         while(value > 21 && aces > 0) {
-                value -= 10; // Treat Ace as 1 instead of 11
+                value -= 10;
                 aces--;
         }
         return value;
@@ -71,14 +71,13 @@ public class Hand {
         return cards.size() == 2 && getValue() == 21;
     }
 
-
     /**
      * Set bet amount for the hand.
      * @param bet - amount of chips to bet on this hand
      */
     public void setBet(double bet) {
         if (bet < 0) {
-            return; //ERR08-J: Prevent NullPointerExceptions 
+            return;
         }
         this.bet =  bet;
     }
@@ -128,7 +127,6 @@ public class Hand {
      * @return - list of cards in the hand
      */
     public List<Card> getCards() {
-        //MET52-L: Return defensive copy
         return new ArrayList<>(cards);
     }
 }

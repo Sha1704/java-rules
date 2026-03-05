@@ -11,24 +11,20 @@ import java.util.logging.Logger;
  * betting capabilities.
  * @author Maria Plascencia  
  */
-// SER11-J: Externable is never used
 public class Player implements Serializable{
-
-    //Declaring variables
     private static final Logger LOGGER = Logger.getLogger(Player.class.getName());
-    private static final long serialVersionUID = 1L; //SER01-J: Explicit serialVersionUID for Serializable class
-    private transient final int playerId; //SER03-J: Sensitive field not serialized
+    private static final long serialVersionUID = 1L;
+    private transient final int playerId;
     private final String name;
-    //VNA00-J: volatile variable for visibility across threads
     private volatile double chipBalance;
-    private Hand hand; // Changed from List<Hand> to single Hand (removed splitting)
+    private Hand hand;
     private boolean isActive;
-    
-    // VNA00-J: Additional volatile for player action state (read by dealer thread)
     private volatile boolean readyForAction;
     private volatile PlayerAction currentAction;
 
-    // Enum for player actions
+    /**
+     * Enum for player actions.
+     */
     public enum PlayerAction {
         HIT, STAND, WAITING, TIMEOUT
     }
@@ -38,7 +34,7 @@ public class Player implements Serializable{
      * @param playerId - unique identifier for the player
      * @param name - player's display name
      * @param initialChips - starting chip count
-     * @throws IllegalArgumentException if parameters are invalid (ERR07-J: specific exception)
+     * @throws IllegalArgumentException if parameters are invalid
      */
     public Player(int playerId, String name, double initialChips) {
         if(playerId <= 0) {
@@ -54,7 +50,7 @@ public class Player implements Serializable{
         this.playerId = playerId;
         this.name = name;
         this.chipBalance = initialChips;
-        this.hand = null; // No hand until bet is placed
+        this.hand = null;
         this.isActive = true;
         this.readyForAction = false;
         this.currentAction = PlayerAction.WAITING;
@@ -66,12 +62,11 @@ public class Player implements Serializable{
      * @return true if bet is placed successfully, false otherwise
      */
     public boolean placeBet(double amount) {
-        //ERR08-J: Prevent NullPointerExceptions by checking parameters before use
         if(amount <= 0) {
             logError("Invalid bet amount: " + amount, null);
             return false;
         }
-        double currentBalance = chipBalance; // Read volatile variable once for consistency
+        double currentBalance = chipBalance;
         if(currentBalance < amount) {
             logError("Insufficient chips for bet.", null);
             return false;
@@ -81,17 +76,13 @@ public class Player implements Serializable{
             if(hand == null) {
                 hand = new Hand();
             }
-            //Atomic operation to update chip balance
             synchronized (this) {
                 chipBalance -= amount;
                 hand.setBet(amount);
             }
-
             logInfo("Player " + name + " placed a bet of " + amount);
             return true;
         } catch (Exception e) {
-            //ERR01-J: Don't expose sensitive information in error messages, 
-            //log the exception securely (ERR02-J)
             logError("Error placing bet for player.", e);
             return false;
         }
@@ -111,11 +102,14 @@ public class Player implements Serializable{
             chipBalance += amount;
             logInfo("Player " + name + " won " + amount);
         } catch (Exception e) {
-            //ERR01-J: Don't expose sensitive information in error messages,
-            //log the exception securely (ERR02-J)
             logError("Error adding winnings for player.", e);
         }
     }
+
+    /**
+     * Add money to player's chip balance.
+     * @param amount - amount to add
+     */
     public void addMoney(double amount) {
         if(amount < 0) {
             logError("Negative amount to add: "+amount, null);
@@ -123,18 +117,15 @@ public class Player implements Serializable{
         }
 
         try {
-            chipBalance += amount; // Atomic operation to update chip balance
+            chipBalance += amount;
             logInfo("Player " + name + " added " + amount + " to balance.");
         } catch (Exception e) {
-            //ERR01-J:Don't expose sensitive information in error messages,
-            //log the exception securely (ERR02-J)
             logError("Error adding money for player.", e);
         }
     }
 
     /**
-     * Player chooses to hit
-     * VNA00-J: volatile ensures action is visible to dealer thread
+     * Player chooses to hit.
      */
     public void hit() {
         currentAction = PlayerAction.HIT;
@@ -143,8 +134,7 @@ public class Player implements Serializable{
     }
 
     /**
-     * Player chooses to stand
-     * VNA00-J: volatile ensures action is visible to dealer thread
+     * Player chooses to stand.
      */
     public void stand() {
         currentAction = PlayerAction.STAND;
@@ -153,7 +143,7 @@ public class Player implements Serializable{
     }
 
     /**
-     * Set player timeout (when they don't respond in time)
+     * Set player timeout.
      */
     public void setTimeout() {
         currentAction = PlayerAction.TIMEOUT;
@@ -162,7 +152,7 @@ public class Player implements Serializable{
     }
 
     /**
-     * Reset ready flag after action is processed
+     * Reset ready flag after action is processed.
      */
     public void resetReadyForAction() {
         readyForAction = false;
@@ -170,7 +160,7 @@ public class Player implements Serializable{
     }
 
     /**
-     * Dealer checks if player is ready (will see most up-to-date value due to volatile)
+     * Check if player is ready for action.
      * @return true if player is ready
      */
     public boolean isReadyForAction() {
@@ -178,7 +168,7 @@ public class Player implements Serializable{
     }
 
     /**
-     * Dealer gets player's action (will see most up-to-date value due to volatile)
+     * Get player's current action.
      * @return current player action
      */
     public PlayerAction getCurrentAction() {
@@ -186,8 +176,8 @@ public class Player implements Serializable{
     }
 
     /**
-     * Get the current chip balance of the player.
-     * @return - current chip balance
+     * Get the current chip balance.
+     * @return current chip balance
      */
     public double getChipBalance() {
         return chipBalance;
@@ -195,7 +185,7 @@ public class Player implements Serializable{
 
     /**
      * Get the player's hand.
-     * @return - current hand or null if no hand exists
+     * @return current hand or null if no hand exists
      */
     public Hand getHand() {
         return hand;
@@ -221,7 +211,7 @@ public class Player implements Serializable{
     }
 
     /**
-     * Check if player has an active hand (not busted or standing)
+     * Check if player has an active hand.
      * @return true if hand is active
      */
     public boolean hasActiveHand() {
@@ -229,7 +219,7 @@ public class Player implements Serializable{
     }
 
     /**
-     * Reset player's hand for a new round (keep chips)
+     * Reset player's hand for a new round.
      */
     public void resetForNewRound() {
         hand = null;
@@ -238,57 +228,69 @@ public class Player implements Serializable{
     }
 
     /**
-     * Log error messages without exposing sensitive information (ERR01-J).
-     * Handles logging exceptions securely (ERR02-J).
+     * Log error messages.
      * @param message - user-friendly error message
-     * @param e - exception that occurred (can be null if not applicable)
+     * @param e - exception that occurred
      */
     private void logError(String message, Exception e) {
         try{
             if(e != null) {
-                //Log detailed error for debugging, but avoid exposing sensitive info in the message (ERR01-J)
                 LOGGER.log(Level.SEVERE, message + " - Error details for debugging", e);
             } else {
                 LOGGER.log(Level.SEVERE, message);
             }
         } catch (Exception loggingException) {
-            // Prevent exceptions while logging data
             System.err.println("An error occurred while logging: " + loggingException.getMessage());
         }
     }
 
     /**
-     * Logs informational messages. (ERR02-J)
+     * Log informational messages.
      * @param message - info message
      */
     private void logInfo(String message) {
         try{
             LOGGER.info(message);
         } catch (Exception e) {
-            // Prevent exceptions while logging data
             System.err.println(message);
         }
     }
 
-    //Getters and setters
+    /**
+     * Get player ID.
+     * @return player ID
+     */
     public int getPlayerId() {
         return playerId;
     }
+
+    /**
+     * Get player name.
+     * @return player name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Check if player is active.
+     * @return true if active
+     */
     public boolean isActive() {
         return isActive;
     }
 
+    /**
+     * Set player active status.
+     * @param active active status
+     */
     public void setActive(boolean active) {
         this.isActive = active;
     }
 
     @Override
     public String toString() {
-        return String.format("Player{id='%s', name='%s', chips=%d, active=%b, ready=%b, action=%s}", 
+        return String.format("Player{id='%s', name='%s', chips=%f, active=%b, ready=%b, action=%s}", 
             playerId, name, chipBalance, isActive, readyForAction, currentAction);
     }
 }

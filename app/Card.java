@@ -1,4 +1,6 @@
 package app;
+
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -7,15 +9,19 @@ import java.util.Objects;
  * The class includes enums for standard ranks and suits, and provides methods
  * to access card attributes and compare arrays of cards safely.
  */
+public class Card implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-public class Card {
-
-    //The four suits in a standard deck of cards.
+    /**
+     * The four suits in a standard deck of cards.
+     */
     public enum Suit {
         HEARTS, DIAMONDS, CLUBS, SPADES
     }
 
-    //The ranks in a standard deck of cards, with associated values for Blackjack.
+    /**
+     * The ranks in a standard deck of cards, with associated values for Blackjack.
+     */
     public enum Rank {
         TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6), SEVEN(7), EIGHT(8), NINE(9), TEN(10),
         JACK(10), QUEEN(10), KING(10), ACE(11);
@@ -30,6 +36,10 @@ public class Card {
             this.value = value; 
         }
 
+        /**
+         * Get the numeric value of the rank.
+         * @return the numeric value
+         */
         public int getValue() { 
             return value; 
         }
@@ -53,15 +63,26 @@ public class Card {
         this.suit = suit;
     }
 
-    //getters
+    /**
+     * Get the suit of the card.
+     * @return the suit
+     */
     public Suit getSuit() { 
         return suit; 
     }
 
+    /**
+     * Get the rank of the card.
+     * @return the rank
+     */
     public Rank getRank() { 
         return rank; 
     }
 
+    /**
+     * Get the blackjack value of the card.
+     * @return the value
+     */
     public int getValue() { 
         return rank.getValue(); 
     }
@@ -102,7 +123,9 @@ public class Card {
     static class Resource {
         private boolean open = true;
 
-        //uses the resource if it is still open, otherwise throws an exception
+        /**
+         * Uses the resource if it is still open, otherwise throws an exception.
+         */
         public void use() {
             if (!open) {
                 throw new IllegalStateException("Resource has been freed");
@@ -110,7 +133,9 @@ public class Card {
             System.out.println("Resource in use");
         }
 
-        //frees the resource and marks it as no longer usable
+        /**
+         * Frees the resource and marks it as no longer usable.
+         */
         public void free() {
             open = false;
             System.out.println("Resource freed");
