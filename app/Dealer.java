@@ -36,7 +36,7 @@ public class Dealer {
     public void addPlayer(Player player) {
         // ERR08-J: Prevent NullPointerExceptions by checking parameters before use (moved from Player)
         Objects.requireNonNull(player, "Player cannot be null");
-        players.put(player.getPlayerId(), player);
+        players.put(String.valueOf(player.getPlayerId()), player);
         LOGGER.info("Player " + player.getName() + " added to the game");
     }
 
@@ -44,8 +44,8 @@ public class Dealer {
      * Remove a player from the game
      * @param playerId - ID of player to remove
      */
-    public void removePlayer(String playerId) {
-        Player removed = players.remove(playerId);
+    public void removePlayer(int playerId) {
+        Player removed = players.remove(String.valueOf(playerId));
         if (removed != null) {
             LOGGER.info("Player " + removed.getName() + " removed from the game");
         }
@@ -194,6 +194,7 @@ public class Dealer {
      */
     public void playTurn() {
         while(getHandValue() < 17) {
+
             Card newCard = deck.drawCard();
             if(newCard != null) {
                 addCard(newCard);

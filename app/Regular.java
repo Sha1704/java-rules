@@ -42,7 +42,7 @@ class Regular {
      * @param gamesPlayed number of games played
      * @param lastLogin last login date
      */
-    Regular(String playerName, int balance, int gamesPlayed, Date lastLogin){
+    Regular(String playerName, double balance, int gamesPlayed, Date lastLogin){
         if(playerName == null || playerName.isBlank()){
             throw new IllegalArgumentException("Player name cannot be blank");
         }
@@ -98,7 +98,7 @@ class Regular {
      * 
      * @param bet amount to bet and must be > 0 and <= balance
      */
-    public void playGame(int bet){
+    public void playGame(double bet){
         if(bet <=0){
             throw new IllegalArgumentException("Bet must be greater than 0!");
         }
@@ -121,7 +121,7 @@ class Regular {
      * 
      * @param amount amount that add to balance 
      */
-    protected final void addBalance(int amount){
+    protected final void addBalance(double amount){
         if (amount < 0){
             throw new IllegalArgumentException("Amount cannot be negative");
         }
