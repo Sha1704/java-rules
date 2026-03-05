@@ -150,6 +150,9 @@ public class SaveFile {
             // Write sealed data to file
             Files.write(new File(SAVE_FILE).toPath(), sealedData);
 
+            //validate file attributes after creation
+            fileManager.checkFileAttributes(SAVE_FILE);
+
             System.out.println("Player saved securely (SER02-J: sign-then-seal)");
             return true;
 
