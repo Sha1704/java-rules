@@ -17,10 +17,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.util.Base64;
 import java.util.Set;
 
 import javax.crypto.BadPaddingException;
@@ -34,6 +30,8 @@ public class SaveFile {
 
     // File name for storing player data
     private static final String SAVE_FILE = "player_profile.dat";
+    // Instance of FileManager for file operations
+    private final FileManager fileManager = new FileManager();
 
     // WHITELIST of allowed classes for SER12-J (prevents deserializing untrusted
     // classes)
@@ -73,6 +71,12 @@ public class SaveFile {
         }
     }
 
+    // Method to delete the save file, used for testing and resetting state
+    //FIO02-J: Detect and handle file-related errors
+         public void deleteSave() {
+            fileManager.deleteFile(SAVE_FILE);
+    }
+
     /**
      * Saves a player object to disk. This method follows SER01-J, SER02-J,
      * SER03-J, SER04-J, MET54-J, ERR53-J, FIO53-J.
@@ -110,6 +114,9 @@ public class SaveFile {
 
             byte[] serializedData = baos.toByteArray();
 
+            //ensure file is created securely without overwriting existing files
+            fileManager.checkFileCreation(SAVE_FILE);
+
             // SER02-J: Sign then seal
             if (encryptionKey == null || signatureKey == null) {
                 System.err.println("SER02-J: Encryption and signature keys required");
@@ -138,6 +145,9 @@ public class SaveFile {
 
             // Write sealed data to file
             Files.write(new File(SAVE_FILE).toPath(), sealedData);
+
+            //validate file attributes after creation
+            fileManager.checkFileAttributes(SAVE_FILE);
 
             System.out.println("Player saved securely (SER02-J: sign-then-seal)");
             return true;
@@ -403,25 +413,6 @@ class EncryptAndDecrypt {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(encryptionType);
         SecretKey myKey = keyGenerator.generateKey();
 
-        // Convert keu to base 64 string for storage
-        String encodedKey = Base64.getEncoder().encodeToString(myKey.getEncoded());
-
-        // Database connection info
-        String DB_URL = "jdbc:oracle:thin:@10.110.10.90:1521:oracle";
-        String USER = "IT326S09";
-        String PASS = "pink22";
-
-        String query = "INSERT INTO account_balance ('key') VALUES (?)"; 
-        
-        Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-        PreparedStatement stmt = conn.prepareStatement(query);
-
-        stmt.setString(1, encodedKey);
-        stmt.executeUpdate();
-
-        stmt.close();
-        conn.close();
-
         return myKey;
     }
 
@@ -463,7 +454,7 @@ class EncryptAndDecrypt {
         } catch (BadPaddingException e) {
             System.out.println("Bad padding exception: " + e.getMessage());
             return null;
-        }
+        } 
     }
 
     /*

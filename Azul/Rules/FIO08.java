@@ -11,6 +11,11 @@ import java.util.Scanner;
  */
 
 public class FIO08{
+     /**
+     * The main method prompts the user for a filename, then reads and prints
+     * each byte as a character, using the {@code read()} method's return value
+     * @param args command-line arguments 
+     */
 	public static void main(String[] args){
 		Scanner scan = new Scanner(System.in);
 		System.out.print("Enter file: ");
