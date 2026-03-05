@@ -1,5 +1,9 @@
 package app;
 
+/**
+ * Handles secure saving and loading of player profiles. Implements CERT rules
+ * for serialization safety.
+ */
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
@@ -7,18 +11,9 @@ import java.util.*;
 import javax.crypto.SecretKey;
 
 import java.security.*;
-
-/**
- * Handles secure saving and loading of player profiles. Implements CERT rules
- * for serialization safety.
- */
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -29,6 +24,8 @@ public class SaveFile {
 
     // File name for storing player data
     private static final String SAVE_FILE = "player_profile.dat";
+    // Instance of FileManager for file operations
+    private final FileManager fileManager = new FileManager();
 
     // WHITELIST of allowed classes for SER12-J (prevents deserializing untrusted classes)
     private static final Set<String> SAFE_CLASSES = Set.of(
@@ -67,6 +64,12 @@ public class SaveFile {
 
             return super.resolveClass(desc);
         }
+    }
+
+    // Method to delete the save file, used for testing and resetting state
+    //FIO02-J: Detect and handle file-related errors
+         public void deleteSave() {
+            fileManager.deleteFile(SAVE_FILE);
     }
 
     /**
@@ -110,6 +113,9 @@ public class SaveFile {
 
             byte[] serializedData = baos.toByteArray();
 
+            //ensure file is created securely without overwriting existing files
+            fileManager.checkFileCreation(SAVE_FILE);
+
             // SER02-J: Sign then seal objects before sending outside trust boundary
             // For now, we just store the raw data
             // TODO: Implement actual signing and encryption here
@@ -125,6 +131,9 @@ public class SaveFile {
             // If Player has sensitive data, it should NOT be in serializedData
             // Write to file
             Files.write(new File(SAVE_FILE).toPath(), serializedData);
+            
+            //validate file attributes after writing
+            fileManager.checkFileAttributes(SAVE_FILE);
 
             System.out.println("Player saved successfully");
             return true; // MET54-J: Success feedback
@@ -169,6 +178,8 @@ public class SaveFile {
         }
 
         try {
+            //validate file attributes before reading
+            fileManager.checkFileAttributes(SAVE_FILE);
             byte[] fileData = Files.readAllBytes(file.toPath());
 
             // SER02-J: Sign then seal - reverse order: unseal then verify
@@ -382,7 +393,7 @@ class EncryptAndDecrypt
         {
             System.out.println("Bad padding exception: " + e.getMessage());
             return null;
-        }
+        } 
     }
 
     /* example of encrypting and decrypting
