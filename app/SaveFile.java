@@ -17,10 +17,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.util.Base64;
 import java.util.Set;
 
 import javax.crypto.BadPaddingException;
@@ -402,25 +398,6 @@ class EncryptAndDecrypt {
         // Generate AES key
         KeyGenerator keyGenerator = KeyGenerator.getInstance(encryptionType);
         SecretKey myKey = keyGenerator.generateKey();
-
-        // Convert keu to base 64 string for storage
-        String encodedKey = Base64.getEncoder().encodeToString(myKey.getEncoded());
-
-        // Database connection info
-        String DB_URL = "jdbc:oracle:thin:@10.110.10.90:1521:oracle";
-        String USER = "IT326S09";
-        String PASS = "pink22";
-
-        String query = "INSERT INTO account_balance ('key') VALUES (?)"; 
-        
-        Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-        PreparedStatement stmt = conn.prepareStatement(query);
-
-        stmt.setString(1, encodedKey);
-        stmt.executeUpdate();
-
-        stmt.close();
-        conn.close();
 
         return myKey;
     }

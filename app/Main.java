@@ -9,6 +9,8 @@ import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.Scanner;
 
+import javax.crypto.SecretKey;
+
 /**
  * Main class that runs the Blackjack application.
  * Handles user interaction, database access, and game flow.
@@ -21,6 +23,14 @@ public class Main {
      * Prints the available options during the Blackjack game.
      * Allows the player to either hit or stay.
      */
+
+    // SHALOM
+    // Add cryptographic key fields for save/load
+    // In production, load/generate keys securely and persist them
+    private static javax.crypto.SecretKey encryptionKey;
+    private static java.security.PrivateKey signatureKey;
+    private static java.security.PublicKey verificationKey;
+    private static SaveFile saveFile = new SaveFile();
     public static void printGameOptions() {
         System.out.println("Choose a play option:");
         System.out.println("1. Hit");
@@ -43,6 +53,9 @@ public class Main {
             System.out.println(count+". Access VIP lounge");
         }*/
         System.out.println(count+". Exit");
+        // SHALOM
+        System.out.println("5. Save player profile");
+        System.out.println("6. Load player profile");
         System.out.print("Enter your choice: ");
        
     }
@@ -407,6 +420,20 @@ public class Main {
         String name = "";
         int id = -1;
 
+        // SHALOM
+        try {
+            // Generate AES key for encryption
+            SecretKey mKey = EncryptAndDecrypt.generateKey("AES");
+
+            // Generate RSA key pair for signing/verification
+            java.security.KeyPairGenerator kpg = java.security.KeyPairGenerator.getInstance("RSA");
+            kpg.initialize(2048);
+            java.security.KeyPair kp = kpg.generateKeyPair();
+            signatureKey = kp.getPrivate();
+            verificationKey = kp.getPublic();
+        } catch (Exception e) {
+            System.err.println("Key generation error: " + e.getMessage());
+        }
         try {
 
             // Establish database connection
@@ -495,13 +522,35 @@ public class Main {
 
                         System.out.println("chose to EXIT.");
                         break;
+// SHALOM
+                    case "5":
+                    System.out.println("chose to SAVE PLAYER PROFILE.");
+                    boolean saved = saveFile.savePlayer(gamePlayer, encryptionKey, signatureKey);
+                    if (saved) {
+                        System.out.println("Player profile saved.");
+                    } else {
+                        System.out.println("Failed to save player profile.");
+                    }
+                    break;
 
-                    default:
+                case "6":
+                    System.out.println("chose to LOAD PLAYER PROFILE.");
+                    Player loadedPlayer = saveFile.loadPlayer(encryptionKey, verificationKey);
+                    if (loadedPlayer != null) {
+                        gamePlayer = loadedPlayer;
+                        System.out.println("Player profile loaded.");
+                    } else {
+                        System.out.println("Failed to load player profile.");
+                    }
+                    break;
+// END SHALOM
+                default:
 
-                        System.out.println("INVALID CHOICE.");
+                    System.out.println("INVALID CHOICE.");
                 }
 
                 System.out.println();
+                
             }
 
             scanner.close();
