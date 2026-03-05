@@ -11,9 +11,18 @@ import java.util.*;
 import javax.crypto.SecretKey;
 
 import java.security.*;
+
+/**
+ * Handles secure saving and loading of player profiles. Implements CERT rules
+ * for serialization safety.
+ */
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
