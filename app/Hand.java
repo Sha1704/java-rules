@@ -12,7 +12,7 @@ public class Hand {
     //Declaring variables
     private static final Logger LOGGER = Logger.getLogger(Hand.class.getName());
     private final List<Card> cards;
-    private int bet;
+    private double bet;
     private boolean isStanding;
     private boolean isBusted;
 
@@ -28,6 +28,8 @@ public class Hand {
 
     /**
      * Add a card to the hand.
+     * MET51-J: Single addCard method for Card objects - no overloading
+     * to differentiate between runtime types
      * @param card - card to be added to the hand
      */
     public void addCard(Card card) {
@@ -69,32 +71,23 @@ public class Hand {
         return cards.size() == 2 && getValue() == 21;
     }
 
-    /**
-     * Check if the hand can be split (two cards of the same rank).
-     * @return - true if the hand can be split, false otherwise
-     */
-    public boolean canSplit()
-    {
-        return cards.size() == 2 && cards.get(0) != null && cards.get(1) != null &&
-               cards.get(0).getRank() == cards.get(1).getRank();
-    }
 
     /**
      * Set bet amount for the hand.
      * @param bet - amount of chips to bet on this hand
      */
-    public void setBet(int bet) {
+    public void setBet(double bet) {
         if (bet < 0) {
             return; //ERR08-J: Prevent NullPointerExceptions 
         }
-        this.bet = bet;
+        this.bet =  bet;
     }
 
     /**
      * Get the current bet amount for the hand.
      * @return - current bet amount
      */
-    public int getBet() {
+    public double getBet() {
         return bet;
     }
 

@@ -1,9 +1,9 @@
 package app;
-import java.util.Date;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import java.nio.ByteBuffer;
 
 /**
  * Represents a VIP blackjack acc, inheriting from regular acc
@@ -14,12 +14,14 @@ final class VIP extends Regular {
     // private field to control VIP boost and stores chosen perk (OBJ01)
     private boolean vipBoostActive;
     private String selectedPerk = "";
+    private boolean bonusUsed;
+    private boolean loungeAccessUsed;
 
     /**
      * unmodifiable list of available VIP perks (OBJ10 & OBJ13)
      */
     private static final List<String> AVAILABLE_PERKS = 
-        Collections.unmodifiableList(Arrays.asList("CardCounting", "LoungeAccess"));
+        Collections.unmodifiableList(Arrays.asList("Bonus", "LoungeAccess"));
 
     /**
      * constructor fully initializes object (OBJ11)
@@ -37,14 +39,13 @@ final class VIP extends Regular {
         this.vipBoostActive = true;
         // Short lived messages (OBJ52)
         gameMessage("\nYou have been promoted to VIP!");
-        gameMessage("Available VIP perks: " + AVAILABLE_PERKS);
         // temporary buffer for logging (OBJ53)
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         buffer.put(("VIP promotion for " + playerName).getBytes());
         buffer.flip();
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
-        System.out.println("\nVIP promotion event occurred");
+        System.out.println("VIP promotion event occurred");
     }
 
     /**
@@ -78,13 +79,26 @@ final class VIP extends Regular {
      * use the selected perk if one has been chosen (OBJ01)
      */
     public void usePerk(){
-        if(selectedPerk.equals("CardCounting")){
-            useCardCounting();
-        } else if(selectedPerk.equals("LoungeAccess")){
-            accessLounge();
-        } else {
-            System.out.println("No perk selected yet.");
+        switch (selectedPerk) {
+            case "Bonus" -> {
+                if(bonusUsed){
+                    System.out.println("Bonus perk already used.");
+                    return;
+                }   extraBalance();
+                selectedPerk = "";
+                bonusUsed = true;
+            }
+            case "LoungeAccess" -> {
+                if(loungeAccessUsed){
+                    System.out.println("Lounge access perk already used.");
+                    return;
+                }   accessLounge();
+                selectedPerk = "";
+                loungeAccessUsed = true;
+            }
+            default -> System.out.println("No perk selected yet.");
         }
+        vipBoostActive = ! (bonusUsed && loungeAccessUsed);
     }
 
     /**
@@ -97,9 +111,12 @@ final class VIP extends Regular {
     }
 
     // private helper methods for perks
-    private void useCardCounting(){
-        System.out.println("Using card counting strategy!");
-        // Azul card counting logic here
+    private void extraBalance(){
+        System.out.println("Accessing VIP bonus perk: Extra Balance!");
+        // Give an extra 100 to the player's balance
+        int bonus = 100;
+        addBalance(bonus);
+        System.out.println("Your balance has increased by " + bonus + "!");  
     }
     private void accessLounge(){
         System.out.println("Accessing VIP Lounge! Enjoy your perks!");
