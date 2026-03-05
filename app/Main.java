@@ -38,11 +38,9 @@ public class Main {
         System.out.println("1. Play");
         System.out.println("2. Add money");
         System.out.println("3. View balance");
-        int count= 4;
-        /**if(regularPlayer.isVIP()) {
-            System.out.println(count+". Access VIP lounge");
-        }*/
-        System.out.println(count+". Exit");
+        
+        System.out.println("4. Exit");
+        if(regularPlayer.)
         System.out.print("Enter your choice: ");
        
     }
