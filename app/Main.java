@@ -10,8 +10,6 @@ import java.text.Normalizer.Form;
 import java.util.Date;
 import java.util.Scanner;
 
-import javax.crypto.SecretKey;
-
 /**
  * Main class that runs the Blackjack application.
  * Handles user interaction, database access, and game flow.
